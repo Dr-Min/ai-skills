@@ -1,0 +1,4 @@
+interface:
+  display_name: "Law MCP 연결"
+  short_description: "법제처 인증값으로 Law MCP를 안전하게 연결합니다"
+  default_prompt: "Use $law-mcp-setup to connect Korean Law MCP to Codex."

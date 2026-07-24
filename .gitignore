@@ -1,0 +1,13 @@
+.DS_Store
+__pycache__/
+*.py[cod]
+.env
+.env.*
+credentials.json
+*.secret
+*.token
+backups/
+.pytest_cache/
+.coverage
+dist/
+build/

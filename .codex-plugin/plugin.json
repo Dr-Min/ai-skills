@@ -1,0 +1,33 @@
+{
+  "name": "biz-law-codex",
+  "version": "0.1.0",
+  "description": "Korean Law MCP connection and practical business skills for Codex",
+  "author": {
+    "name": "Biz Law Codex contributors"
+  },
+  "keywords": [
+    "korean-law",
+    "business",
+    "tax",
+    "legal",
+    "mcp"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "Biz + Korean Law",
+    "shortDescription": "법령 MCP와 1인사업자 실무 스킬 묶음",
+    "longDescription": "법제처 Open API 인증값을 로컬에 등록해 Korean Law MCP를 연결하고, 법무·세무·재무·월간 운영 등 1인사업자용 실무 스킬을 제공합니다.",
+    "developerName": "Biz Law Codex contributors",
+    "category": "Productivity",
+    "capabilities": [
+      "Interactive",
+      "Read"
+    ],
+    "defaultPrompt": [
+      "Law MCP를 연결해줘.",
+      "내 사업을 법무·세무·재무 관점에서 통합 점검해줘.",
+      "이 계약서의 독소조항을 현재 법령과 함께 확인해줘."
+    ]
+  },
+  "mcpServers": "./.mcp.json"
+}

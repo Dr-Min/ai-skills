@@ -1,0 +1,153 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "사업가 사업 프로필 JSON 스키마",
+  "description": "사업가-* 스킬 시리즈 공통 입력. ~/.lbiz-aibu/profile.json에 저장.",
+  "type": "object",
+  "required": ["schema_version", "updated_at", "fields"],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0",
+      "description": "스키마 버전. 변경 시 자동 마이그레이션."
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 형식 (예: 2026-05-06T14:30:00+09:00)"
+    },
+    "fields": {
+      "type": "object",
+      "required": ["company_name", "industry", "business_type"],
+      "properties": {
+        "company_name": {
+          "type": "string",
+          "description": "회사명 또는 프리랜서 본인명",
+          "example": "엘비즈파트너스"
+        },
+        "industry": {
+          "type": "string",
+          "description": "업종 (한국표준산업분류 코드 또는 키워드)",
+          "example": "경영컨설팅"
+        },
+        "business_type": {
+          "type": "string",
+          "enum": ["개인사업자", "법인", "프리랜서", "미등록"],
+          "description": "사업자 형태"
+        },
+        "tax_type": {
+          "type": "string",
+          "enum": ["일반과세", "간이과세", "면세", "모름"],
+          "description": "과세 유형"
+        },
+        "customer_type": {
+          "type": "string",
+          "enum": ["B2B", "B2C", "B2G", "혼합"],
+          "description": "고객 유형"
+        },
+        "revenue_model": {
+          "type": "string",
+          "description": "매출 방식 (자유 서술)",
+          "example": "프로젝트 단위 + 시간 단위"
+        },
+        "common_deal": {
+          "type": "string",
+          "description": "자주 하는 거래 (자유 서술)",
+          "example": "1,000만원 미만 6개월 컨설팅"
+        },
+        "tax_advisor": {
+          "type": "string",
+          "enum": ["있음", "분기별만", "신고철에만", "없음"],
+          "description": "세무사 이용 여부"
+        },
+        "biz_card_separated": {
+          "type": "string",
+          "enum": ["완전 분리", "부분 분리", "미분리"],
+          "description": "사업용 카드·계좌 분리 여부"
+        },
+        "biggest_concern": {
+          "type": "string",
+          "description": "가장 걱정되는 문제 1줄",
+          "example": "외상매출 회수 안 됨"
+        }
+      }
+    },
+    "additional_qa": {
+      "type": "array",
+      "description": "사각지대 질문 10개 + 답변",
+      "items": {
+        "type": "object",
+        "required": ["id", "q", "a"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^Q\\d+$",
+            "example": "Q1"
+          },
+          "q": {
+            "type": "string",
+            "description": "질문 텍스트"
+          },
+          "a": {
+            "type": "string",
+            "description": "답변 (또는 '추후 확인')"
+          }
+        }
+      }
+    },
+    "completeness": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "0.0 ~ 1.0 — 입력 완성도. 0.7 미만이면 추가 인터뷰 권장."
+    },
+    "metadata": {
+      "type": "object",
+      "description": "선택 메타데이터",
+      "properties": {
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "version": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "프로필 갱신 버전 (1부터 시작)"
+        },
+        "last_used_skill": {
+          "type": "string",
+          "description": "마지막으로 본 프로필을 사용한 스킬"
+        }
+      }
+    }
+  },
+  "examples": [
+    {
+      "schema_version": "1.0",
+      "updated_at": "2026-05-06T14:30:00+09:00",
+      "fields": {
+        "company_name": "엘비즈파트너스",
+        "industry": "경영컨설팅",
+        "business_type": "개인사업자",
+        "tax_type": "일반과세",
+        "customer_type": "B2B",
+        "revenue_model": "프로젝트 단위 + 시간 단위",
+        "common_deal": "1,000만원 미만 6개월 컨설팅",
+        "tax_advisor": "분기별만",
+        "biz_card_separated": "완전 분리",
+        "biggest_concern": "외상매출 회수 안 됨"
+      },
+      "additional_qa": [
+        { "id": "Q1", "q": "거래처 결제 평균 지연일?", "a": "30~45일" },
+        { "id": "Q4", "q": "현금 거래 비중?", "a": "10% 이내" },
+        { "id": "Q6", "q": "노란우산·IRP 가입?", "a": "노란우산만" },
+        { "id": "Q8", "q": "본인 4대보험 체납?", "a": "없음" }
+      ],
+      "completeness": 0.85,
+      "metadata": {
+        "created_at": "2026-04-01T10:00:00+09:00",
+        "version": 3,
+        "last_used_skill": "사업가-법무팀장"
+      }
+    }
+  ]
+}
