@@ -9,5 +9,7 @@ credentials.json
 backups/
 .pytest_cache/
 .coverage
+coverage.xml
+htmlcov/
 dist/
 build/

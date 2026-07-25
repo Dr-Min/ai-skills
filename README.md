@@ -1,96 +1,180 @@
-# Biz + Korean Law for Codex
+# AI Skills
 
-법제처 Korean Law MCP와 1인사업자용 Biz 스킬을 한 번에 설치하는 Codex 패키지입니다.
+필요한 것만 골라 설치하는 개인 Codex 스킬 허브입니다. 비즈니스 실무, 공공데이터 조회, 한국 법령, 영상 제작, 교육, 스킬 제작 도구를 하나의 모노레포에서 관리합니다.
 
-설치 프로그램이 다음 질문을 표시합니다.
+## 빠른 시작
 
-```text
-당신의 인증 코드는 무엇인가요?
-> 본인의_OC_인증값
+```bash
+git clone https://github.com/Dr-Min/ai-skills.git
+cd ai-skills
+python install.py --list
 ```
 
-입력한 값은 법제처 국가법령정보센터 Open API의 `OC` 형식을 확인하고 실제 검색 연결을 시험한 뒤 사용자 컴퓨터에만 저장합니다. Git 저장소에는 기록하지 않습니다.
+Korean Law MCP 없이 원하는 스킬만 설치:
 
-## 포함 항목
+```bash
+python install.py \
+  --no-law-mcp \
+  --skills adaptive-mastery-tutor,cinematic-video-pipeline
+```
 
-- `korean-law-mcp@4.8.0` 연결 런처
-- Law MCP 연결·복구용 `law-mcp-setup` 스킬
-- 8개 Biz 스킬
-  - `biz-ai-secretary`
-  - `biz-color-map`
-  - `biz-finance-team`
-  - `biz-health-check`
-  - `biz-legal-team`
-  - `biz-monthly-sop`
-  - `biz-profile`
-  - `biz-tax-team`
-- `biz-health-check`에 필요한 6개 공공데이터 지원 스킬
+모든 스킬과 Korean Law MCP 설치:
 
-Law MCP 서버 소스 자체를 복제해 넣지는 않습니다. 이 저장소의 연결 코드가 공식 npm 패키지 `korean-law-mcp`를 실행하고, 사용자가 입력한 `LAW_OC`를 프로세스 환경으로 안전하게 전달합니다.
+```bash
+python install.py
+```
 
-## 준비 사항
+설치기는 법제처 Open API `OC` 값을 요청합니다. 인증값은 Git 저장소가 아닌 사용자 컴퓨터의 `~/.codex/ai-skills/credentials.json`에만 저장됩니다.
 
-- macOS 또는 Linux
-- Python 3
-- Node.js 20.19 이상
+## 어떤 스킬을 고르면 되나요?
+
+| 목적 | 추천 스킬 |
+|---|---|
+| 사업 전체를 한 번에 점검 | `biz-ai-secretary` |
+| 계약서 작성·검토 | `biz-legal-team` |
+| 영수증·지출·세무 준비 | `biz-tax-team` |
+| 정책자금·사업계획·현금흐름 | `biz-finance-team` |
+| 거래처·사업자 실사 | `biz-health-check` |
+| 한국 법령 MCP 연결 | `law-mcp-setup` |
+| 단계별 개인 튜터 | `adaptive-mastery-tutor` |
+| 영화형 영상 제작 파이프라인 | `cinematic-video-pipeline` |
+| Seedance 2.0 프롬프트 | `min-edit-seedance-2-0` |
+| 새로운 Codex 스킬 제작 | `skill-builder-101` |
+
+전체 목록과 경로·의존성은 [`catalog.json`](catalog.json)에 있습니다.
+
+## 카테고리
+
+### Business
+
+- `biz-ai-secretary`: 법무·세무·재무 통합 디스패처
+- `biz-color-map`: 업무를 자동·검토·전문가 영역으로 분류
+- `biz-finance-team`: 정책자금, 사업계획, 월간 재무 점검
+- `biz-health-check`: 사업자 공공데이터 교차 조회
+- `biz-legal-team`: 계약서·독소조항·미수금 점검
+- `biz-monthly-sop`: 월간 세무·증빙 루틴
+- `biz-profile`: 사업 프로필 인터뷰와 공통 컨텍스트
+- `biz-tax-team`: 세무 증빙 분류와 세무사 전달 패키지
+
+### Public data
+
+- `fsc-corporate-info`: 금융위원회 법인 기본정보
+- `g2b-sanctioned-supplier`: 나라장터 부정당제재
+- `localdata-business-status`: 지방행정 인허가 영업상태
+- `national-pension-workplace`: 국민연금 가입 사업장
+- `nts-business-registration`: 사업자등록 상태·진위
+- `nts-tax-delinquency`: 공개 고액·상습체납 명단
+
+### Legal
+
+- `law-mcp-setup`: Korean Law MCP 설치·복구·검증
+
+### Media
+
+- `cinema-studio-pipeline`: 영화 제작 교육형 파이프라인
+- `cinematic-video-pipeline`: 재현 가능한 영상 생성 파이프라인
+- `min-edit-seedance-2-0`: Seedance 2.0 멀티모달 프롬프트
+
+### Education and tooling
+
+- `adaptive-mastery-tutor`: 적응형 숙달 학습 튜터
+- `skill-builder-101`: 스킬 구조·작성·패키징 가이드
+
+## 설치 명령
+
+설치 가능한 스킬 확인:
+
+```bash
+python install.py --list
+```
+
+한 개만 설치:
+
+```bash
+python install.py --no-law-mcp --skills skill-builder-101
+```
+
+여러 개 설치:
+
+```bash
+python install.py \
+  --no-law-mcp \
+  --skills biz-profile,biz-ai-secretary,biz-tax-team
+```
+
+선택 스킬과 Korean Law MCP를 함께 설치:
+
+```bash
+python install.py \
+  --skills law-mcp-setup,biz-legal-team,biz-tax-team
+```
+
+MCP만 설정:
+
+```bash
+python install.py --no-skills
+```
+
+기존에 같은 이름의 스킬이 있으면 설치 전에 `~/.codex/backups/` 아래로 백업합니다.
+
+## 저장소 구조
+
+```text
+ai-skills/
+├─ .codex-plugin/plugin.json
+├─ .mcp.json
+├─ catalog.json
+├─ install.py
+├─ skills/
+│  ├─ biz-ai-secretary/
+│  ├─ adaptive-mastery-tutor/
+│  ├─ cinematic-video-pipeline/
+│  └─ .../
+├─ artifacts/
+├─ docs/
+├─ scripts/
+└─ tests/
+```
+
+각 설치 단위는 `skills/` 바로 아래에서 자체 `SKILL.md`를 가진 독립 폴더입니다. 플러그인 호환성을 위해 폴더는 평탄하게 유지하고 분야 분류는 `catalog.json`에서 관리합니다.
+
+## 요구사항
+
+- Python 3.9 이상
 - Codex
-- 법제처 Open API `OC` 인증값
+- Korean Law MCP 사용 시 Node.js 20.19 이상
+- 법령 API 사용 시 국가법령정보센터 Open API `OC`
+- 일부 공공데이터 스킬은 별도 프록시 또는 API 연결 필요
+- 미디어 생성 스킬은 해당 생성 서비스·MCP 연결 필요
 
-인증값이 없다면 [국가법령정보 공동활용](https://open.law.go.kr)에서 Open API 사용을 신청하세요.
+## 보안
 
-## 설치
+- 실제 `.env`, 토큰, 쿠키, 인증값을 커밋하지 않습니다.
+- `OC`는 로컬 credentials 파일에 권한을 제한해 저장합니다.
+- 설치 전 기존 설정과 동명 스킬을 백업합니다.
+- 법률·세무·재무 결과는 공식 자료와 전문가 확인을 대체하지 않습니다.
+- 공개 데이터 조회 결과는 사실을 나열하며 임의의 신용점수나 위험등급을 만들지 않습니다.
 
-```bash
-git clone <이 저장소 주소>
-cd biz-law-codex
-python3 install.py
-```
+자세한 내용은 [`SECURITY.md`](SECURITY.md)를 참고하세요.
 
-설치기가 인증값을 질문하면 본인의 `OC`를 입력합니다. 설치 후 Codex 앱을 다시 시작하거나 새 작업을 여세요.
-
-Codex가 직접 연결하도록 하려면 플러그인을 불러온 뒤 다음처럼 요청할 수도 있습니다.
-
-```text
-Law MCP 연결해줘
-```
-
-그러면 `law-mcp-setup` 스킬이 인증값을 묻고 같은 설치·검증 절차를 진행합니다.
-
-## 설치기가 하는 일
-
-1. Node.js와 `npx` 버전을 확인합니다.
-2. 법제처 API에 읽기 전용 검색 요청을 보내 연결 여부를 확인합니다.
-3. 인증값을 `~/.codex/biz-law-codex/credentials.json`에 권한 `0600`으로 저장합니다.
-4. Law MCP 런처를 `~/.codex/biz-law-codex/scripts/`에 설치합니다.
-5. `~/.codex/config.toml`에 `korean-law` MCP를 등록합니다.
-6. Biz 및 지원 스킬을 `~/.codex/skills/`에 설치합니다.
-7. 기존 설정과 같은 이름의 스킬은 `~/.codex/backups/`에 백업합니다.
-
-## 연결 확인
-
-Codex를 다시 시작한 뒤 다음처럼 요청하세요.
-
-```text
-민법 제1조를 현재 법령 원문으로 찾아줘
-```
-
-법령 검색 도구가 실행되고 법제처 출처가 표시되면 연결된 것입니다.
-
-## 인증값 보안
-
-- 실제 인증값을 `.env`, README, 예제 파일 또는 Git 커밋에 넣지 마세요.
-- 인증값은 사용자 컴퓨터의 Codex 폴더에만 저장됩니다.
-- Law MCP 실행 시 인증값은 명령행 인수가 아니라 `LAW_OC` 환경변수로 전달됩니다.
-- 인증값을 바꾸려면 `python3 install.py`를 다시 실행하세요.
-- 법제처 기본 검색 API는 임의 문자열에도 검색 결과를 반환할 수 있어, 설치기는 `OC`의 실제 발급·소유 여부까지 보증하지 않습니다. 발급 여부는 법제처 마이페이지에서 확인하세요.
-
-## 개발자용 검사
+## 개발과 검증
 
 ```bash
-python3 -m unittest discover -s tests -v
-python3 scripts/validate_package.py
+python -m unittest discover -s tests -v
+python scripts/validate_package.py
+python install.py --list
 ```
 
-## 주의
+플러그인 manifest는 `.codex-plugin/plugin.json`, MCP 연결은 `.mcp.json`에서 관리합니다.
 
-이 패키지는 법률·세무·재무 전문가를 대신하지 않습니다. 법령과 수치는 조회 시점의 공식 원문을 다시 확인하고, 신고·서명·소송·대출 같은 중요한 결정은 해당 전문가와 검토하세요.
+## 통합 출처
+
+다음 기존 저장소의 Git 이력을 보존해 통합했습니다.
+
+- `Dr-Min/biz-law-codex`
+- `Dr-Min/higgs-skills`
+- `Dr-Min/cinematic-video-pipeline`
+- `Dr-Min/adaptive-mastery-tutor`
+- `Dr-Min/min-edit-seedance-2-0`
+
+기존 저장소는 통합 검증이 끝날 때까지 삭제하지 않습니다.

@@ -1,32 +1,37 @@
 {
-  "name": "biz-law-codex",
-  "version": "0.1.0",
-  "description": "Korean Law MCP connection and practical business skills for Codex",
+  "name": "ai-skills",
+  "version": "0.2.0",
+  "description": "Selectable AI skills for business, public data, law, media, education, and skill building",
   "author": {
-    "name": "Biz Law Codex contributors"
+    "name": "Dr-Min",
+    "url": "https://github.com/Dr-Min"
   },
+  "homepage": "https://github.com/Dr-Min/ai-skills",
+  "repository": "https://github.com/Dr-Min/ai-skills",
   "keywords": [
+    "ai-skills",
+    "codex",
     "korean-law",
     "business",
-    "tax",
-    "legal",
+    "media",
+    "education",
     "mcp"
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Biz + Korean Law",
-    "shortDescription": "법령 MCP와 1인사업자 실무 스킬 묶음",
-    "longDescription": "법제처 Open API 인증값을 로컬에 등록해 Korean Law MCP를 연결하고, 법무·세무·재무·월간 운영 등 1인사업자용 실무 스킬을 제공합니다.",
-    "developerName": "Biz Law Codex contributors",
+    "displayName": "AI Skills",
+    "shortDescription": "필요한 AI 스킬만 골라 설치하는 개인 스킬 허브",
+    "longDescription": "비즈니스·공공데이터·법률·미디어 제작·교육·스킬 제작 도구를 카탈로그에서 선택해 설치하고, 필요하면 Korean Law MCP도 함께 연결합니다.",
+    "developerName": "Dr-Min",
     "category": "Productivity",
     "capabilities": [
       "Interactive",
       "Read"
     ],
     "defaultPrompt": [
-      "Law MCP를 연결해줘.",
-      "내 사업을 법무·세무·재무 관점에서 통합 점검해줘.",
-      "이 계약서의 독소조항을 현재 법령과 함께 확인해줘."
+      "설치 가능한 AI 스킬을 분야별로 보여줘.",
+      "내 작업에 맞는 스킬 조합을 추천해줘.",
+      "선택한 스킬과 Law MCP를 설치해줘."
     ]
   },
   "mcpServers": "./.mcp.json"

@@ -14,13 +14,13 @@ import stat
 import subprocess
 import sys
 import tempfile
-from typing import Iterable, Optional, Tuple
+from typing import Iterable, Optional, Sequence, Tuple
 import urllib.error
 import urllib.parse
 import urllib.request
 
 
-PLUGIN_NAME = "biz-law-codex"
+PLUGIN_NAME = "ai-skills"
 LAW_MCP_PACKAGE = "korean-law-mcp@4.8.0"
 OC_PATTERN = re.compile(r"^[A-Za-z0-9._-]{3,128}$")
 MCP_SECTION_PREFIX = "mcp_servers.korean-law"
@@ -90,7 +90,7 @@ def check_law_api(oc: str, timeout: int = 20) -> Tuple[str, str]:
         headers={
             "Accept": "application/json,text/plain,*/*",
             "Referer": "https://open.law.go.kr/",
-            "User-Agent": "biz-law-codex/0.1",
+            "User-Agent": "ai-skills/0.2",
         },
     )
 
@@ -216,21 +216,61 @@ def copy_runtime(repo_root: Path, codex_home: Path) -> Path:
     return runtime_dir / launcher_source.name
 
 
-def skill_directories(skills_root: Path) -> Iterable[Path]:
-    for path in sorted(skills_root.iterdir()):
-        if path.is_dir() and (path / "SKILL.md").is_file():
-            yield path
+def discover_skills(skills_root: Path) -> list[Path]:
+    """Find installable skills while allowing category directories.
 
-
-def install_skills(repo_root: Path, codex_home: Path, backup_dir: Path) -> int:
-    source_root = repo_root / "skills"
-    if not source_root.is_dir():
+    A directory containing SKILL.md is one installable unit, so discovery does
+    not descend into that directory. This prevents localized files such as
+    ``zh/SKILL.md`` from being treated as separate skills.
+    """
+    if not skills_root.is_dir():
         raise SetupError("패키지의 skills 폴더가 없습니다.")
+
+    discovered: list[Path] = []
+
+    def visit(directory: Path) -> None:
+        for path in sorted(directory.iterdir(), key=lambda item: item.name.lower()):
+            if not path.is_dir():
+                continue
+            if (path / "SKILL.md").is_file():
+                discovered.append(path)
+            else:
+                visit(path)
+
+    visit(skills_root)
+    return discovered
+
+
+def resolve_skills(
+    available: Sequence[Path],
+    selected_names: Optional[Sequence[str]] = None,
+) -> list[Path]:
+    by_name = {path.name: path for path in available}
+    if len(by_name) != len(available):
+        raise SetupError("서로 다른 카테고리에 같은 이름의 스킬이 있습니다.")
+    if selected_names is None:
+        return list(available)
+
+    normalized = [name.strip() for name in selected_names if name.strip()]
+    unknown = sorted(set(normalized) - set(by_name))
+    if unknown:
+        raise SetupError(f"찾을 수 없는 스킬: {', '.join(unknown)}")
+    return [by_name[name] for name in dict.fromkeys(normalized)]
+
+
+def install_skills(
+    repo_root: Path,
+    codex_home: Path,
+    backup_dir: Path,
+    selected_names: Optional[Sequence[str]] = None,
+) -> int:
+    source_root = repo_root / "skills"
+    sources = resolve_skills(discover_skills(source_root), selected_names)
 
     destination_root = codex_home / "skills"
     destination_root.mkdir(parents=True, exist_ok=True)
     count = 0
-    for source in skill_directories(source_root):
+    for source in sources:
         destination = destination_root / source.name
         if destination.exists():
             skill_backup = backup_dir / "skills" / source.name
@@ -258,6 +298,7 @@ def run_setup(
     oc: str,
     skip_api_check: bool = False,
     install_skill_files: bool = True,
+    selected_skill_names: Optional[Sequence[str]] = None,
 ) -> dict:
     oc = validate_oc(oc)
     runtime_ok, runtime_detail = check_node_runtime()
@@ -281,7 +322,12 @@ def run_setup(
         backup_dir,
     )
     skills_installed = (
-        install_skills(repo_root, codex_home, backup_dir)
+        install_skills(
+            repo_root,
+            codex_home,
+            backup_dir,
+            selected_names=selected_skill_names,
+        )
         if install_skill_files
         else 0
     )
@@ -323,6 +369,20 @@ def parse_args(argv: Optional[Iterable[str]] = None) -> argparse.Namespace:
         action="store_true",
         help="MCP만 설정하고 스킬 파일은 설치하지 않습니다.",
     )
+    parser.add_argument(
+        "--skills",
+        help="설치할 스킬 이름을 쉼표로 구분합니다. 생략하면 전체를 설치합니다.",
+    )
+    parser.add_argument(
+        "--list",
+        action="store_true",
+        help="설치 가능한 스킬 목록을 출력하고 종료합니다.",
+    )
+    parser.add_argument(
+        "--no-law-mcp",
+        action="store_true",
+        help="Korean Law MCP 설정 없이 선택한 스킬만 설치합니다.",
+    )
     return parser.parse_args(argv)
 
 
@@ -341,7 +401,51 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         else _repo_root_from_script()
     )
 
-    print("Biz + Korean Law Codex 설치")
+    available = discover_skills(repo_root / "skills")
+    selected_names = (
+        [name.strip() for name in args.skills.split(",") if name.strip()]
+        if args.skills
+        else None
+    )
+
+    if args.list:
+        try:
+            catalog = json.loads(
+                (repo_root / "catalog.json").read_text(encoding="utf-8")
+            )
+            categories = {
+                item["name"]: item["category"] for item in catalog["skills"]
+            }
+        except (OSError, json.JSONDecodeError, KeyError, TypeError):
+            categories = {}
+        for skill in available:
+            print(f"{skill.name}\t{categories.get(skill.name, 'uncategorized')}")
+        return 0
+
+    try:
+        resolve_skills(available, selected_names)
+    except SetupError as exc:
+        print(f"설치 실패: {exc}", file=sys.stderr)
+        return 1
+
+    if args.no_law_mcp:
+        timestamp = dt.datetime.now().strftime("%Y%m%d-%H%M%S")
+        backup_dir = codex_home / "backups" / f"{PLUGIN_NAME}-{timestamp}"
+        try:
+            installed = install_skills(
+                repo_root,
+                codex_home,
+                backup_dir,
+                selected_names=selected_names,
+            )
+        except SetupError as exc:
+            print(f"설치 실패: {exc}", file=sys.stderr)
+            return 1
+        print(f"AI Skills: {installed}개 설치")
+        print("Korean Law MCP 설정은 건너뛰었습니다.")
+        return 0
+
+    print("AI Skills + Korean Law MCP 설치")
     print("Law MCP 연결을 위해 법제처 Open API 인증값(OC)이 필요합니다.")
     supplied = args.oc
     if supplied is None:
@@ -358,6 +462,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
             oc=supplied,
             skip_api_check=args.skip_api_check,
             install_skill_files=not args.no_skills,
+            selected_skill_names=selected_names,
         )
     except SetupError as exc:
         print(f"설치 실패: {exc}", file=sys.stderr)
@@ -370,7 +475,7 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
         f"{result['connection_status']} — {result['connection_detail']}"
     )
     print(f"Law MCP: {result['law_mcp_package']}")
-    print(f"Biz 및 지원 스킬: {result['skills_installed']}개 설치")
+    print(f"선택한 AI 스킬: {result['skills_installed']}개 설치")
     print(f"기존 설정 백업: {result['config_backup']}")
     print("설치가 끝났습니다. Codex 앱을 다시 시작하거나 새 작업을 여세요.")
     return 0

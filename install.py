@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Friendly entry point for the Biz + Korean Law Codex installer."""
+"""Friendly entry point for the selectable AI Skills installer."""
 
 from pathlib import Path
 import runpy

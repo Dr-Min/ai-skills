@@ -26,6 +26,11 @@ REQUIRED_SKILLS = {
     "national-pension-workplace",
     "nts-business-registration",
     "nts-tax-delinquency",
+    "adaptive-mastery-tutor",
+    "cinema-studio-pipeline",
+    "cinematic-video-pipeline",
+    "min-edit-seedance-2-0",
+    "skill-builder-101",
 }
 FORBIDDEN_PATTERNS = {
     "raw credential assignment": re.compile(
@@ -58,13 +63,36 @@ def main() -> int:
 
     skills_root = ROOT / "skills"
     installed_skills = {
-        path.name
-        for path in skills_root.iterdir()
-        if path.is_dir() and (path / "SKILL.md").is_file()
+        path.parent.name
+        for path in skills_root.rglob("SKILL.md")
+        if not any(
+            (parent / "SKILL.md").is_file()
+            for parent in path.parent.parents
+            if parent != path.parent and parent != skills_root.parent
+        )
     }
     missing = REQUIRED_SKILLS - installed_skills
     if missing:
         errors.append(f"missing required skills: {', '.join(sorted(missing))}")
+
+    catalog_path = ROOT / "catalog.json"
+    try:
+        catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
+        catalog_names = {item["name"] for item in catalog["skills"]}
+    except (OSError, json.JSONDecodeError, KeyError, TypeError) as exc:
+        errors.append(f"catalog read failed: {exc}")
+        catalog_names = set()
+    if catalog_names != installed_skills:
+        missing_from_catalog = sorted(installed_skills - catalog_names)
+        extra_in_catalog = sorted(catalog_names - installed_skills)
+        if missing_from_catalog:
+            errors.append(
+                f"catalog missing skills: {', '.join(missing_from_catalog)}"
+            )
+        if extra_in_catalog:
+            errors.append(
+                f"catalog has unknown skills: {', '.join(extra_in_catalog)}"
+            )
 
     for path in ROOT.rglob("*"):
         if not path.is_file() or path.suffix.lower() not in TEXT_SUFFIXES:
