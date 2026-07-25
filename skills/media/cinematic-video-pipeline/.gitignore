@@ -1,0 +1,20 @@
+# pipeline outputs
+out/
+*.mp4
+*.png
+_tmp/
+_check*
+_montage*
+_last_*
+_trk*
+
+# python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# os
+.DS_Store
+Thumbs.db
+desktop.ini
