@@ -1,0 +1,6 @@
+interface:
+  display_name: "적응형 완전학습 튜터"
+  short_description: "초보부터 실전까지 이해를 확인하며 단계적으로 학습"
+  default_prompt: "Use $adaptive-mastery-tutor to teach me this topic step by step, check my reasoning, correct misconceptions, and advance only after I understand."
+policy:
+  allow_implicit_invocation: true
