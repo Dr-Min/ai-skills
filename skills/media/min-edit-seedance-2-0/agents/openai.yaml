@@ -1,0 +1,4 @@
+interface:
+  display_name: "Min Edit Seedance 2.0"
+  short_description: "Seedance 2.0 prompts with Higgsfield MCP"
+  default_prompt: "Use $min-edit-seedance-2-0 to create a production-ready Seedance 2.0 prompt and valid Higgsfield MCP media payload."
