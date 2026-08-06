@@ -4,6 +4,14 @@ A character lives or dies on its **character sheet** — the reference image See
 reads to know who this person is. **Seedance reads it literally**, so every flaw in the
 sheet becomes a flaw in every shot generated from it.
 
+## Contents
+
+- Four-move pipeline
+- Identity and state lock
+- Model routing
+- Character-sheet template and proof rules
+- Surgical editing and slop rejection
+
 ## The four-move pipeline (always in this order)
 
 1. **Generate** — build the sheet from a prompt Claude writes: moodboard and
@@ -16,11 +24,25 @@ sheet becomes a flaw in every shot generated from it.
 4. **Test in Seedance** — on a good location. The **test is the finish line**, not the
    generation.
 
+## Lock identity and state before bulk shooting
+
+Treat the character asset as a reference image plus a fixed descriptor. Before locking
+it, run at least ten useful tests across pose, distance, and lighting. Test beside the
+other cast and in the actual location light; a face that holds alone may fail in an
+ensemble. Require the critical identity anchors to remain recognizable in every
+approved test.
+
+Create a separate asset and descriptor for every material state change: wet, bloodied,
+wounded, changed wardrobe, transformed body, or another condition the model could mix.
+Do not combine mutually exclusive states in one character description.
+
 ## Which model
-- **Soul Cinema** — first choice for generating characters.
-- **Seedream 4.5** — also works; run in parallel.
-- **AI Cast (Cinema Studio)** — a strong casting tool, worth exploring.
+- **AI Cast (Cinema Studio)** — fast path when its automatic sheet is sufficient.
+- **Soul Cinema / the current Soul character model** — first manual-generation
+  candidate when the sheet needs direct prompt control.
 - **Nano Banana Pro** — editing a finished sheet **only**; never generating one.
+- **Seedream** — texture recovery on an otherwise approved sheet; not the default for
+  a discrete point edit.
 - **GPT Image 2** — creatures and precise add-ons only (oversharpens human skin; keep
   it to a small patch).
 
@@ -81,9 +103,10 @@ detail, high dynamic range, 8k.
   character like game footage.
 - **Grey is the golden middle** — white bleeds into the video and washes out your
   location; black eats detail. Deep neutral grey wins.
-- **Crop the head off the full-body panels** — on a full-length panel the face always
-  distorts and drifts from the portrait; remove it so Seedance is forced to take face
-  textures from the **portrait panel**, where the pixels and precision are.
+- **Remove the small front-view face** — the front full-body face often distorts and
+  competes with the dominant portrait. Remove it so Seedance takes face texture from
+  the large portrait. Keep or remove the rear-view head based on whether hair and back
+  silhouette are continuity evidence; verify the choice with an A/B motion test.
 
 ## Editing characters — surgery, not a redo
 
@@ -91,9 +114,9 @@ Editing a sheet is surgery. One flaw in the sheet is one flaw in **every** shot
 (a baked-in orange rim light in the portrait tints every downstream generation). You
 never regenerate the whole sheet to fix one flaw.
 
-- **Which model:** Nano Banana Pro for most sheet edits (never generating); GPT Image 2
-  for precise add-ons/creatures (keep it to a small patch — it oversharpens human skin);
-  Seedream 4.5 in parallel batches, take the cleanest.
+- **Which model:** Nano Banana Pro for most sheet edits (never generating); Seedream
+  for texture recovery; GPT Image for precise add-ons/creatures or the smallest local
+  repair the first route cannot hold. Parallelize only for a deliberate A/B test.
 - **Apply surgically:** every change goes onto the original sheet through Photoshop
   masks — swap only the region that changed, keep the original untouched everywhere else.
 - **Never regenerate on top of an already-edited sheet** — every pass re-renders the

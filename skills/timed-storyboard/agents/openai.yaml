@@ -1,0 +1,4 @@
+interface:
+  display_name: "Timed Storyboard"
+  short_description: "Plan precise timed action and camera paths"
+  default_prompt: "Use $timed-storyboard to turn my story into a timed storyboard with detailed character and camera motion paths."

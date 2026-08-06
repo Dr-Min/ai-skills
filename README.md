@@ -39,9 +39,11 @@ python install.py
 | 단계별 개인 튜터 | `adaptive-mastery-tutor` |
 | 영화형 영상 제작 파이프라인 | `cinematic-video-pipeline` |
 | Seedance 2.0 프롬프트 | `min-edit-seedance-2-0` |
+| 음악에 맞춘 컷 편집 | `sync-cuts-to-music` |
+| 초 단위 시네마틱 스토리보드 | `timed-storyboard` |
 | 새로운 Codex 스킬 제작 | `skill-builder-101` |
 
-전체 목록과 경로·의존성은 [`catalog.json`](catalog.json)에 있습니다.
+각 스킬의 사용 시점·핵심 기능·입출력·의존성·주의사항은 [`docs/skill-catalog-ko.md`](docs/skill-catalog-ko.md), 기계가 읽는 전체 목록과 경로·의존성은 [`catalog.json`](catalog.json)에 있습니다.
 
 ## 카테고리
 
@@ -74,6 +76,8 @@ python install.py
 - `cinema-studio-pipeline`: 영화 제작 교육형 파이프라인
 - `cinematic-video-pipeline`: 재현 가능한 영상 생성 파이프라인
 - `min-edit-seedance-2-0`: Seedance 2.0 멀티모달 프롬프트
+- `sync-cuts-to-music`: 트랜지언트 기반 음악 컷 분석과 편집 패키지
+- `timed-storyboard`: 초 단위 쇼트·동선·카메라 스토리보드
 
 ### Education and tooling
 
@@ -156,6 +160,10 @@ ai-skills/
 - 공개 데이터 조회 결과는 사실을 나열하며 임의의 신용점수나 위험등급을 만들지 않습니다.
 
 자세한 내용은 [`SECURITY.md`](SECURITY.md)를 참고하세요.
+
+## 라이선스
+
+이 저장소는 공개되어 있지만 저장소 전체에 적용되는 단일 오픈소스 라이선스는 아직 없습니다. 개별 `SKILL.md`에 라이선스가 명시된 항목만 해당 조건으로 재사용할 수 있으며, 나머지 자료는 별도 허가 없이 복제·재배포할 수 있는 것으로 간주하지 마세요. 자세한 내용은 [`NOTICE.md`](NOTICE.md)를 참고하세요.
 
 ## 개발과 검증
 

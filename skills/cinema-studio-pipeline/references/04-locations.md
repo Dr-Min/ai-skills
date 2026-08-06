@@ -55,13 +55,12 @@ Editing is **not a rescue step** — it's part of developing a good input. Almos
 good location still needs work: swapping details, removing clutter, color-correcting to
 your project. The skill is doing it **without wrecking what already works**.
 
-### Run three models in parallel
-You don't pick one edit model — you run them in parallel and take the best result per
-change:
-- **GPT Image 2** — text, mathematically precise detail on complex objects.
-- **Nano Banana Pro** — most edits that don't need GPT-level precision.
-- **Seedream 4.5** — run in parallel batches; rarely slops but may miss the ask, so
-  fire more tries.
+### Escalate edits deliberately
+Start with **Nano Banana Pro** for most edits. Use **Seedream** when an otherwise sound
+frame needs skin, fabric, or surface texture recovery. Use **GPT Image** for readable
+text, mathematically precise local detail, or a reverse/view change that the first pass
+cannot hold. Run models in parallel only when the best route is uncertain enough that
+an A/B comparison is worth the cost.
 
 (Real cafeteria pass: Nano Banana Pro cleaned grime off red metal, fixed fused stools,
 added trays/litter; GPT Image 2 swapped in lamps, TVs, and menu boards with readable
@@ -71,7 +70,8 @@ composited every edit onto the original.)
 ### The three edit locks
 1. **Edit the original** — every detail you add or remove gets **masked onto the
    ORIGINAL** in Photoshop. Change only the patch that changed; leave the rest untouched.
-2. **Run models in parallel** — as above.
+2. **Use the narrowest capable model route** — start with Nano Banana, then escalate;
+   parallelize only for a deliberate comparison.
 3. **Never re-edit an edit** — an edit model never touches only what you asked for; it
    quietly **re-renders the whole image**. A second pass on an edited image re-renders
    again and compounds slop. Always mask the change onto the master file.

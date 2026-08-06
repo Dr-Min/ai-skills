@@ -10,7 +10,9 @@ changes, repeat the evidence test — never carry today's ranking forward.
 
 ### Soul Cinema — from-scratch, atmosphere & realism
 A candidate when cinematic texture and atmosphere matter more than exact object control.
-Also the **first choice for generating characters**.
+Also a first manual-generation candidate for character sheets when the current Soul
+character model is available; use AI Cast as the fast path when its automatic sheet is
+sufficient.
 - **Fits:** raking side light keeps materials tactile (not CG-flat); haze creates depth;
   creative angles/color/light suit exploratory location work; realistic skin and
   clothing textures suit from-scratch character sheets; handles short and long prompts.
@@ -42,21 +44,35 @@ change. Never use it to *generate* a character sheet.
   centered, staged, stock-like.
 - **Use when** landing the requested change matters more than pristine tones or faces.
 
-### Seedream 4.5 — texture-preserving character-sheet edits
-A candidate when preserving skin and clothing texture matters more than exact pose.
+### Seedream 4.5 — texture-recovery pass
+A candidate when an otherwise approved frame needs skin, fabric, or surface texture
+recovery. Do not make it the default for a discrete point edit.
 - **Fits:** fine surface detail (scrollwork, drape) holds across front/back; freckles,
   pores, eye detail survive close-up; can attach a finished character sheet and avoid
   the common "banana"/oversharpened texture.
 - **Rule-out:** after-only view can't prove pose/proportions stayed locked; edits can
   shift pose or angle (longer mask-and-composite pass); can preserve texture yet miss
   part of the requested change.
-- **Use when** clean character texture is hardest to repair; compare with Nano Banana
-  Pro when landing the change matters.
+- **Use when** clean texture is hardest to repair. Lock composition, identity, light,
+  and grade; name only the surfaces whose texture should recover.
 
 ### The decision rule
 Before every location or character pass, **name one must-preserve requirement**.
 Inspect the output at its **intended crop**. Choose the model that proves that
 requirement and leaves only failures you can afford to fix.
+
+### Production edit routing
+
+Default to a cost-aware escalation instead of running every edit model automatically:
+
+1. **Nano Banana Pro** — first attempt for most existing-frame edits.
+2. **Seedream** — texture recovery when skin, fabric, or surfaces remain synthetic.
+3. **GPT Image** — precise local detail, readable text, or a location view change that
+   Nano Banana cannot hold.
+
+Run parallel candidates only when model fit is genuinely uncertain or when a high-value
+approval gate benefits from direct A/B evidence. Whatever model supplies the patch,
+composite only the changed region onto the immutable original.
 
 ## Proof, not promises
 

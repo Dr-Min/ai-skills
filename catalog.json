@@ -136,6 +136,20 @@
       "requires": ["higgsfield-mcp"]
     },
     {
+      "name": "sync-cuts-to-music",
+      "category": "media",
+      "path": "skills/sync-cuts-to-music",
+      "summary": "음원의 실제 트랜지언트를 분석해 컷 지점과 편집 패키지를 생성",
+      "requires": ["python", "ffmpeg"]
+    },
+    {
+      "name": "timed-storyboard",
+      "category": "media",
+      "path": "skills/timed-storyboard",
+      "summary": "이야기를 초 단위 쇼트와 동선이 있는 시네마틱 스토리보드로 변환",
+      "requires": ["python"]
+    },
+    {
       "name": "skill-builder-101",
       "category": "tooling",
       "path": "skills/skill-builder-101",

@@ -1,6 +1,6 @@
 # 01 — Pipeline, workspace & asset naming
 
-Covers: the four handoffs in detail, why work happens in Claude Cowork, the file
+Covers: the core handoffs in detail, why work happens in Claude Cowork, the file
 types you'll meet, the one-handoff shot-record workflow, and the `@type_project_name`
 naming contract.
 
@@ -14,6 +14,7 @@ Each receiving stage must get something more useful than an idea:
 | **Setup → Generation** | A project, useful folders, one naming contract | Every candidate has an address; approved work becomes a reusable `@loc_`, `@char_`, `@prop_` Element instead of an orphaned file. |
 | **Generation → Seedance** | Proofed, named location, character, and prop Elements | Seedance combines the actual source pixels. A defect here is multiplied in motion. |
 | **Seedance → Review** | A motion test **and a diagnosis** | Review can approve, or send one specific source back for correction. |
+| **Review → Post** | Approved takes, saved prompt versions, and continuity notes | The edit can assemble, clean, color, and mix without guessing provenance. |
 
 **Setup defines the address; generation earns it.** A file does not become production
 input merely because it exists. First inspect it, then approve it, name it, save it as

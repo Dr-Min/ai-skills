@@ -1,99 +1,93 @@
 ---
 name: cinema-studio-pipeline
 description: >-
-  The Higgsfield Cinema Studio "AI Filmmaking Pipeline" as taught by the Hell Grind
-  team — the full production method for taking a film shot from idea to a finished
-  Seedance video. Use this skill whenever the user is doing AI filmmaking, cinematic
-  image/video generation, or working in Higgsfield Cinema Studio / Seedance: building
-  or reviewing location plates, character sheets, or props; writing or optimizing
-  cinematic image prompts; choosing between Soul Cinema, GPT Image 2, Nano Banana Pro,
-  or Seedream 4.5; naming reusable @Elements; spotting "slop"; or directing a shot.
-  Trigger this even when the user doesn't name the pipeline explicitly — e.g. "make a
-  character sheet", "why does my AI video look fake", "which model for this edit",
-  "turn this idea into a prompt", "build a location for my scene", "test this in
-  Seedance". Follow this method and its standards instead of improvising.
+  Direct Higgsfield Cinema Studio and Seedance filmmaking from brief through assets,
+  shot prompts, motion tests, review, and post-production. Use for cinematic image or
+  video generation; location, character, prop, or state assets; Soul Cinema, AI Cast,
+  Nano Banana Pro, Seedream, or GPT Image routing; reusable @Elements; Seedance prompt
+  writing or repair; spatial continuity, acting, dialogue, voice consistency, slop
+  diagnosis, scene-block production, feature-film workflows, and finishing. Trigger
+  for both single shots and multi-scene AI films even when the user does not name the
+  pipeline. Apply these standards instead of improvising.
 ---
 
-# The AI Filmmaking Pipeline (Higgsfield Cinema Studio)
+# Higgsfield Cinema Studio production pipeline
 
-This skill encodes the production pipeline the Hell Grind team runs to take a film
-from idea to a finished Seedance shot. It is opinionated on purpose: naming standards,
-model choices, the 25–30% portrait rule, "test in Seedance before you fall in love
-with a frame". The point of every rule is to **name the flaw, not just feel it** — so
-when you apply a rule, understand *why* it exists and be able to explain it.
+Run the user’s film through explicit handoffs. Treat prompts and model names as
+promises; treat the rendered pixels and sound as proof. Do not advance a stage until
+the receiving stage has an artifact it can trust.
 
-The golden principle running through everything: **a prompt and a model name are
-promises; the pixels are proof.** Nothing advances a stage until you can point at the
-visible evidence that it holds.
+## Core handoffs
 
-## The four stages (one fixed order)
+1. **Think** — lock cause, goal, stakes, obstacle, discovery, choice, and the exact
+   shot or scene requirement. Deliver an approved brief.
+2. **Setup** — create the project structure, asset registry, naming contract, and
+   authoritative production files. Deliver addresses for every candidate.
+3. **Generation** — build and stress-test locations, characters, states, props, and
+   voices. Deliver approved source assets and descriptors.
+4. **Seedance** — direct one diagnosable shot or controlled sequence. Deliver the
+   video, exact prompt version, active references, and diagnosis.
+5. **Review** — correct the earliest broken handoff and retest. Do not hide a source
+   failure with downstream polish.
+6. **Post** — assemble while generating, then clean up, unify color, and finish sound.
+   Deliver a checked sequence, not merely isolated generations.
 
-Every project follows the same four moves. They are not four buttons — they are a
-**chain of handoffs**. A stage is finished only when it leaves a concrete deliverable
-the next stage can trust. If you can't point at that deliverable, the stage isn't done.
+Build the location before judging a character on it. A location is both the shot
+foundation and the test bed that reveals whether identity, light, and physics hold.
 
-1. **Think** — work with the user (in Claude Cowork) until the brief and prompt say
-   exactly what the shot must be. *Deliverable:* an agreed brief + prompt.
-2. **Setup** — a project, useful folders, and one naming contract. *Deliverable:*
-   every candidate has an address; approved work can become a reusable `@loc_`,
-   `@char_`, or `@prop_` Element.
-3. **Generation** — proofed, named location, character, and prop Elements.
-   *Deliverable:* source stills that pass the quality bar. A defect handed over here
-   is multiplied in motion.
-4. **Seedance** — the motion test. *Deliverable:* a motion result **and a diagnosis**,
-   not just a video.
+## Route to the smallest relevant reference
 
-Skipping straight to "generate" is the single most common reason a project stalls —
-you re-prompt the same thing ten times instead of thinking once. **Build the location
-before judging the character on it:** the place is both the foundation of the shot and
-the test bed that reveals whether the character really holds up.
+Read every reference required by the current task, but do not load unrelated modules.
 
-## Review closes the loop
-
-A Seedance test is not pass/fail — it tells you *where to return*. Correct the
-**earliest** broken handoff, approve it again, and retest. Polishing a downstream
-symptom only hides the source.
-
-- Geography melts → fix the **location**.
-- Identity drifts → fix the **character sheet**.
-- Assets sound but action wrong → revise the **Seedance direction**.
-- Whole shot answers the wrong idea → reopen the **brief**.
-
-## How to use this skill
-
-Figure out which leg of the pipeline the user is on, then open the matching reference
-file and apply its standards. Don't dump all the rules at once — load the reference
-that fits the task.
-
-| The user is... | Read |
+| Task | Read |
 | --- | --- |
-| Setting up (Cowork, project, folders, asset naming, handoffs) | `references/01-pipeline-and-setup.md` |
-| Turning a rough idea into a prompt (six-slot pass, the Leera method) | `references/02-prompting.md` |
-| Choosing an image model or deciding whether a generation is approved | `references/03-models-and-proof.md` |
-| Generating or editing a **location** | `references/04-locations.md` |
-| Generating or editing a **character** sheet | `references/05-characters.md` |
-| Testing in Seedance or hunting for **slop** | `references/06-seedance-and-slop.md` |
-| Running the 5-step capstone (a full scene end to end) | `references/07-capstone.md` |
+| Project setup, folders, asset names, handoffs | `references/01-pipeline-and-setup.md` |
+| Image, location, character, or prop prompt construction | `references/02-prompting.md` |
+| Image-model selection or pixel approval | `references/03-models-and-proof.md` |
+| Location generation or repair | `references/04-locations.md` |
+| Character-sheet generation or repair | `references/05-characters.md` |
+| Seedance test diagnosis or slop review | `references/06-seedance-and-slop.md` |
+| Academy five-step capstone | `references/07-capstone.md` |
+| Multi-scene, team, long-form, or feature production | `references/08-feature-production-system.md` |
+| Writing, fixing, or auditing a Seedance video prompt | `references/09-seedance-prompt-director.md` |
+| Acting, dialogue, voice, gaze, or performance continuity | `references/10-acting-and-dialogue.md` |
+| Edit assembly, cleanup, color, or sound finishing | `references/11-post-production.md` |
 
-The complete, unedited text of all 22 course lessons is preserved in
-`references/course-archive.md` — consult it when you need the exact original wording,
-an example, or a detail not summarized elsewhere.
+`references/course-archive.md` preserves the original 22 Academy lessons. Consult it
+for original examples or course wording; treat the focused references above as the
+current operational rules when they are more specific.
 
-## Non-negotiables (the short version)
+## Scope rules that prevent cross-contamination
 
-These recur across the whole pipeline; keep them in mind everywhere:
+- Use the six-slot, one-paragraph method for **image generation**. Do not use it as the
+  final structure for a controlled Seedance shot.
+- Use the structured Seedance document for **video**. Keep only current-shot context;
+  remove stale tags, scene headers, and “same as before” language.
+- Keep platform settings in the UI when the UI is authoritative. Put only settings
+  that change the visible or audible story result into the prompt.
+- Use actual saved `@` tags exactly as they exist. Never invent a tag. The project
+  naming contract controls creation; the platform registry controls retrieval.
+- Treat project-specific style prefixes as optional constants, not universal truth.
+  Spatial, identity, action, physics, and audio locks outrank style language.
 
-- **Proof, not promises.** Judge the pixels at the intended crop, never the model name
-  or the prompt behind it. Name what changed, what stayed, and what's broken.
-- **One naming contract.** Every reusable asset is `@type_project_name`
-  (`@loc_`, `@char_`, `@prop_`), joined with underscores. Retrieval depends on it.
-- **Edit the original, never an edit.** Every edit model silently re-renders the whole
-  frame. Composite the single changed patch onto the original in Photoshop; a second
-  pass on an edited image compounds grime and drift.
-- **Run edit models in parallel.** GPT Image 2 for text/precise detail, Nano Banana Pro
-  for most edits, Seedream 4.5 in parallel batches — take the best result per change.
-- **Test in Seedance before you fall in love with a frame**, and change **one variable
-  at a time** so the failure points at either the source asset or the motion direction.
-- **You're the director; Claude assembles.** Every creative addition must trace back to
-  a visible decision. If Claude adds an unchosen prop, weather, style, or camera move,
-  ask what ambiguity it resolves — then approve, replace, or remove it.
+## Non-negotiables
+
+- **Proof, not promises.** Inspect the intended crop and motion. Name what changed,
+  what held, and the first visible failure.
+- **One naming contract.** Create reusable assets as `@type_project_name` using
+  `@loc_`, `@char_`, and `@prop_`; create separate state variants when appearance or
+  function changes.
+- **Edit the original, never an edit.** Generate a changed patch, composite only that
+  patch onto the immutable master, and record the lineage.
+- **Escalate edits deliberately.** Start with Nano Banana Pro for most edits; use
+  Seedream for texture recovery; use GPT Image for precise local details, readable
+  text, or view changes. Run models in parallel only when uncertainty or approval
+  value justifies the extra cost.
+- **One variable per diagnostic iteration.** Log the prompt version, changed line,
+  result, and verdict. If 10–15 controlled attempts fail, simplify the shot.
+- **Assets before shots.** Stress-test identity, states, geography, and voices before
+  bulk generation.
+- **Positive state first.** Describe what is visibly true; add short local negatives
+  only for demonstrated or high-probability failures.
+- **Direct, then assemble.** Every creative addition must trace to an approved story,
+  spatial, performance, or technical decision.

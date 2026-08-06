@@ -30,6 +30,8 @@ REQUIRED_SKILLS = {
     "cinema-studio-pipeline",
     "cinematic-video-pipeline",
     "min-edit-seedance-2-0",
+    "sync-cuts-to-music",
+    "timed-storyboard",
     "skill-builder-101",
 }
 FORBIDDEN_PATTERNS = {

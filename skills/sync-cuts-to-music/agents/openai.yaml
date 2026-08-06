@@ -1,0 +1,4 @@
+interface:
+  display_name: "Sync Cuts to Music"
+  short_description: "음악 공격음 분석부터 CapCut 컷 구성까지 자동화합니다"
+  default_prompt: "Use $sync-cuts-to-music to analyze this track, review transient cut regions, and export a split package or staged CapCut JSON draft."

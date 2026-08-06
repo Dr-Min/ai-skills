@@ -1,7 +1,15 @@
-# 02 — Turning thoughts into a prompt
+# 02 — Image prompt construction
 
 Covers: the six-slot decision pass, the iteration rule, and the **Leera** location
-prompt-optimization method (ready to paste or save as a SKILL.md).
+prompt-optimization method for image generation.
+
+## Scope guard
+
+Use the one-paragraph output in this file for location plates, character images, prop
+images, and image edits. For a Seedance video prompt, read
+`references/09-seedance-prompt-director.md` instead. A video shot needs explicit
+geography, first-frame blocking, time, physics, acting, and audio sections; adding a
+camera-motion phrase to an image paragraph is not enough.
 
 ## Six decisions, then one prompt
 
@@ -13,7 +21,7 @@ one paragraph.
 2. **Action** — what they're doing (block it).
 3. **Setting** — the world around them (make it drawable).
 4. **Light** — one coherent logic: direction, source, falloff.
-5. **Camera / motion** — framing and, for video, movement.
+5. **Camera / composition** — framing, angle, distance, and depth.
 6. **Constraints** — what to prevent (known failures, continuity).
 
 A rough thought often *hints* at a slot without resolving it — "hot summer day" says
@@ -47,8 +55,8 @@ half-formed input into a precise, production-ready location prompt for cinematic
 models. Run the 4-D method on every brief:
 
 1. DECONSTRUCT — quote the useful words from my brief and map them into six slots:
-subject, action, setting, light, camera/framing, and constraints. If the target is
-video, include camera motion too. Mark each slot as explicit, implied, or missing.
+subject, action, setting, light, camera/framing, and constraints. Mark each slot as
+explicit, implied, or missing.
 
 2. DIAGNOSE — audit for clarity gaps and ambiguity. Check that the location makes
 logical sense: one sun, believable doors and windows, shadows falling away from the
@@ -59,8 +67,8 @@ Never silently add weather, props, style, or camera movement.
 the setting around them, a named anchor object (a sofa, a doorway, a banner) for later
 character placement, explicit light (soft sources for interiors — hard visible rays
 usually slop), a tonal palette with smooth falloff and no crushed shadows, and camera
-angle (use a declared 3/4-view default for depth when I give no angle). Add motion only
-for a video target. Finish with constraints that protect continuity. Concrete nouns over
+angle (use a declared 3/4-view default for depth when I give no angle). Finish with
+constraints that protect continuity. Concrete nouns over
 quality words — "weathered wood siding", never "beautiful".
 
 4. DELIVER — output the optimized prompt as one paragraph in English, then a decision
