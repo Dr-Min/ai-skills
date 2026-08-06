@@ -1,7 +1,11 @@
 # biz-legal-team ⚖️
 
+[전체 스킬 목록](../../README.md) · [실행 지침](SKILL.md)
+
 > 1인사업자·소상공인이 변호사 만나기 직전까지 자료를 정리해 주는 법무 보조자.
 > 5개 모드: 생성·점검·독소·용어·상담준비.
+
+설치: `python install.py --skills biz-legal-team`
 
 ---
 

@@ -1,9 +1,13 @@
 # biz-finance-team 🏦
 
+[전체 스킬 목록](../../README.md) · [실행 지침](SKILL.md)
+
 > 1인사업자·소상공인이 빈손으로 은행 안 가게 하는 1인 재무팀.
 > 5개 모드: 자가진단·사업계획·5숫자·매칭·상담준비.
 
 > "정책자금은 공짜 돈이 아니라, 내 사업을 설명하는 능력의 게임이다."
+
+설치: `python install.py --no-law-mcp --skills biz-finance-team`
 
 ---
 

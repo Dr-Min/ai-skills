@@ -1,5 +1,7 @@
 # Min Edit Seedance 2.0
 
+[전체 스킬 목록](../../README.md) · [실행 지침](SKILL.md)
+
 [中文](README-zh.md)
 
 [Agent skill](https://agentskills.io) for writing effective video generation prompts for [Jimeng Seedance 2.0](https://jimeng.jianying.com/), ByteDance's multimodal AI video generation model. This edition adds Higgsfield MCP media-role and payload guidance to the original prompt-writing workflow.
@@ -8,16 +10,18 @@ Covers input constraints, @ reference syntax, camera language, prompt structure 
 
 ## Install
 
-### Option A: Skills CLI (recommended)
+### Option A: AI Skills monorepo (recommended)
 
 ```bash
-npx skills add Dr-Min/min-edit-seedance-2-0
+git clone https://github.com/Dr-Min/ai-skills.git
+cd ai-skills
+python install.py --no-law-mcp --skills min-edit-seedance-2-0
 ```
 
 ### Option B: Codex manual install
 
 ```bash
-git clone https://github.com/Dr-Min/min-edit-seedance-2-0.git ~/.codex/skills/min-edit-seedance-2-0
+cp -R skills/min-edit-seedance-2-0 ~/.codex/skills/min-edit-seedance-2-0
 ```
 
 The skill is available to Codex on the next turn.

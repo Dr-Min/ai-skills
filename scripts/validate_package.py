@@ -81,9 +81,13 @@ def main() -> int:
     try:
         catalog = json.loads(catalog_path.read_text(encoding="utf-8"))
         catalog_names = {item["name"] for item in catalog["skills"]}
+        catalog_docs = {
+            item["name"]: item.get("documentation") for item in catalog["skills"]
+        }
     except (OSError, json.JSONDecodeError, KeyError, TypeError) as exc:
         errors.append(f"catalog read failed: {exc}")
         catalog_names = set()
+        catalog_docs = {}
     if catalog_names != installed_skills:
         missing_from_catalog = sorted(installed_skills - catalog_names)
         extra_in_catalog = sorted(catalog_names - installed_skills)
@@ -94,6 +98,22 @@ def main() -> int:
         if extra_in_catalog:
             errors.append(
                 f"catalog has unknown skills: {', '.join(extra_in_catalog)}"
+            )
+
+    for skill_name in sorted(installed_skills):
+        readme_path = skills_root / skill_name / "README.md"
+        if not readme_path.is_file():
+            errors.append(f"{skill_name}: missing user-facing README.md")
+            continue
+        readme = readme_path.read_text(encoding="utf-8", errors="replace")
+        if len(readme.strip()) < 1000:
+            errors.append(
+                f"{skill_name}: README.md is too brief for standalone documentation"
+            )
+        expected_doc = f"skills/{skill_name}/README.md"
+        if catalog_docs.get(skill_name) != expected_doc:
+            errors.append(
+                f"{skill_name}: catalog documentation must be {expected_doc}"
             )
 
     for path in ROOT.rglob("*"):

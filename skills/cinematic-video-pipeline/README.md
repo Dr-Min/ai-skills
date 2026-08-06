@@ -1,5 +1,7 @@
 # Cinematic Video Pipeline
 
+[전체 스킬 목록](../../README.md) · [실행 지침](SKILL.md)
+
 Turn a text prompt into a smooth, high-resolution cinematic video clip through four
 stages:
 
@@ -13,10 +15,18 @@ and are free. This repo is a [Claude Code / Agent Skill](https://docs.claude.com
 drop it into `~/.claude/skills/` and Claude can drive the whole pipeline for you — but
 `scripts/pipeline.py` is a plain CLI you can also run by hand.
 
+## Install
+
+From the monorepo root:
+
+```bash
+python install.py --no-law-mcp --skills cinematic-video-pipeline
+```
+
 ## Quickstart
 
 ```bash
-python scripts/pipeline.py \
+python skills/cinematic-video-pipeline/scripts/pipeline.py \
   --image-prompt "<the 4K still prompt>" \
   --motion-prompt "<the camera / subject motion prompt>" \
   --outdir ./out --name myshot --duration 5 --fps 60

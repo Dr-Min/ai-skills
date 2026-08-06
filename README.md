@@ -30,59 +30,59 @@ python install.py
 
 | 목적 | 추천 스킬 |
 |---|---|
-| 사업 전체를 한 번에 점검 | `biz-ai-secretary` |
-| 계약서 작성·검토 | `biz-legal-team` |
-| 영수증·지출·세무 준비 | `biz-tax-team` |
-| 정책자금·사업계획·현금흐름 | `biz-finance-team` |
-| 거래처·사업자 실사 | `biz-health-check` |
-| 한국 법령 MCP 연결 | `law-mcp-setup` |
-| 단계별 개인 튜터 | `adaptive-mastery-tutor` |
-| 영화형 영상 제작 파이프라인 | `cinematic-video-pipeline` |
-| Seedance 2.0 프롬프트 | `min-edit-seedance-2-0` |
-| 음악에 맞춘 컷 편집 | `sync-cuts-to-music` |
-| 초 단위 시네마틱 스토리보드 | `timed-storyboard` |
-| 새로운 Codex 스킬 제작 | `skill-builder-101` |
+| 사업 전체를 한 번에 점검 | [`biz-ai-secretary`](skills/biz-ai-secretary/README.md) |
+| 계약서 작성·검토 | [`biz-legal-team`](skills/biz-legal-team/README.md) |
+| 영수증·지출·세무 준비 | [`biz-tax-team`](skills/biz-tax-team/README.md) |
+| 정책자금·사업계획·현금흐름 | [`biz-finance-team`](skills/biz-finance-team/README.md) |
+| 거래처·사업자 실사 | [`biz-health-check`](skills/biz-health-check/README.md) |
+| 한국 법령 MCP 연결 | [`law-mcp-setup`](skills/law-mcp-setup/README.md) |
+| 단계별 개인 튜터 | [`adaptive-mastery-tutor`](skills/adaptive-mastery-tutor/README.md) |
+| 영화형 영상 제작 파이프라인 | [`cinematic-video-pipeline`](skills/cinematic-video-pipeline/README.md) |
+| Seedance 2.0 프롬프트 | [`min-edit-seedance-2-0`](skills/min-edit-seedance-2-0/README.md) |
+| 음악에 맞춘 컷 편집 | [`sync-cuts-to-music`](skills/sync-cuts-to-music/README.md) |
+| 초 단위 시네마틱 스토리보드 | [`timed-storyboard`](skills/timed-storyboard/README.md) |
+| 새로운 Codex 스킬 제작 | [`skill-builder-101`](skills/skill-builder-101/README.md) |
 
-각 스킬의 사용 시점·핵심 기능·입출력·의존성·주의사항은 [`docs/skill-catalog-ko.md`](docs/skill-catalog-ko.md), 기계가 읽는 전체 목록과 경로·의존성은 [`catalog.json`](catalog.json)에 있습니다.
+각 스킬 이름을 누르면 독립 저장소 수준의 README가 열립니다. 전체를 한 화면에서 비교하려면 [`docs/skill-catalog-ko.md`](docs/skill-catalog-ko.md), 기계가 읽는 이름·경로·문서·의존성은 [`catalog.json`](catalog.json)을 사용하세요.
 
 ## 카테고리
 
 ### Business
 
-- `biz-ai-secretary`: 법무·세무·재무 통합 디스패처
-- `biz-color-map`: 업무를 자동·검토·전문가 영역으로 분류
-- `biz-finance-team`: 정책자금, 사업계획, 월간 재무 점검
-- `biz-health-check`: 사업자 공공데이터 교차 조회
-- `biz-legal-team`: 계약서·독소조항·미수금 점검
-- `biz-monthly-sop`: 월간 세무·증빙 루틴
-- `biz-profile`: 사업 프로필 인터뷰와 공통 컨텍스트
-- `biz-tax-team`: 세무 증빙 분류와 세무사 전달 패키지
+- [`biz-ai-secretary`](skills/biz-ai-secretary/README.md): 법무·세무·재무 통합 디스패처
+- [`biz-color-map`](skills/biz-color-map/README.md): 업무를 자동·검토·전문가 영역으로 분류
+- [`biz-finance-team`](skills/biz-finance-team/README.md): 정책자금, 사업계획, 월간 재무 점검
+- [`biz-health-check`](skills/biz-health-check/README.md): 사업자 공공데이터 교차 조회
+- [`biz-legal-team`](skills/biz-legal-team/README.md): 계약서·독소조항·미수금 점검
+- [`biz-monthly-sop`](skills/biz-monthly-sop/README.md): 월간 세무·증빙 루틴
+- [`biz-profile`](skills/biz-profile/README.md): 사업 프로필 인터뷰와 공통 컨텍스트
+- [`biz-tax-team`](skills/biz-tax-team/README.md): 세무 증빙 분류와 세무사 전달 패키지
 
 ### Public data
 
-- `fsc-corporate-info`: 금융위원회 법인 기본정보
-- `g2b-sanctioned-supplier`: 나라장터 부정당제재
-- `localdata-business-status`: 지방행정 인허가 영업상태
-- `national-pension-workplace`: 국민연금 가입 사업장
-- `nts-business-registration`: 사업자등록 상태·진위
-- `nts-tax-delinquency`: 공개 고액·상습체납 명단
+- [`fsc-corporate-info`](skills/fsc-corporate-info/README.md): 금융위원회 법인 기본정보
+- [`g2b-sanctioned-supplier`](skills/g2b-sanctioned-supplier/README.md): 나라장터 부정당제재
+- [`localdata-business-status`](skills/localdata-business-status/README.md): 지방행정 인허가 영업상태
+- [`national-pension-workplace`](skills/national-pension-workplace/README.md): 국민연금 가입 사업장
+- [`nts-business-registration`](skills/nts-business-registration/README.md): 사업자등록 상태·진위
+- [`nts-tax-delinquency`](skills/nts-tax-delinquency/README.md): 공개 고액·상습체납 명단
 
 ### Legal
 
-- `law-mcp-setup`: Korean Law MCP 설치·복구·검증
+- [`law-mcp-setup`](skills/law-mcp-setup/README.md): Korean Law MCP 설치·복구·검증
 
 ### Media
 
-- `cinema-studio-pipeline`: 영화 제작 교육형 파이프라인
-- `cinematic-video-pipeline`: 재현 가능한 영상 생성 파이프라인
-- `min-edit-seedance-2-0`: Seedance 2.0 멀티모달 프롬프트
-- `sync-cuts-to-music`: 트랜지언트 기반 음악 컷 분석과 편집 패키지
-- `timed-storyboard`: 초 단위 쇼트·동선·카메라 스토리보드
+- [`cinema-studio-pipeline`](skills/cinema-studio-pipeline/README.md): 영화 제작 교육형 파이프라인
+- [`cinematic-video-pipeline`](skills/cinematic-video-pipeline/README.md): 재현 가능한 영상 생성 파이프라인
+- [`min-edit-seedance-2-0`](skills/min-edit-seedance-2-0/README.md): Seedance 2.0 멀티모달 프롬프트
+- [`sync-cuts-to-music`](skills/sync-cuts-to-music/README.md): 트랜지언트 기반 음악 컷 분석과 편집 패키지
+- [`timed-storyboard`](skills/timed-storyboard/README.md): 초 단위 쇼트·동선·카메라 스토리보드
 
 ### Education and tooling
 
-- `adaptive-mastery-tutor`: 적응형 숙달 학습 튜터
-- `skill-builder-101`: 스킬 구조·작성·패키징 가이드
+- [`adaptive-mastery-tutor`](skills/adaptive-mastery-tutor/README.md): 적응형 숙달 학습 튜터
+- [`skill-builder-101`](skills/skill-builder-101/README.md): 스킬 구조·작성·패키징 가이드
 
 ## 설치 명령
 
