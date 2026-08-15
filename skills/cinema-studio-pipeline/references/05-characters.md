@@ -1,138 +1,97 @@
-# 05 — Generating & editing characters
+# 05 — Character identity, state, and performance assets
 
-A character lives or dies on its **character sheet** — the reference image Seedance
-reads to know who this person is. **Seedance reads it literally**, so every flaw in the
-sheet becomes a flaw in every shot generated from it.
+A character reference is useful only when it preserves the approved person through the
+actual crops, lighting, cast combinations, wardrobe states, and movement the film needs.
+A character sheet is one possible container, not a universal solution.
 
-## Contents
+## Character authority record
 
-- Four-move pipeline
-- Identity and state lock
-- Model routing
-- Character-sheet template and proof rules
-- Surgical editing and slop rejection
+Lock these separately so one change does not silently rewrite the rest:
 
-## The four-move pipeline (always in this order)
+- **identity** — age range, facial geometry, skin, hair, distinctive anchors;
+- **body and silhouette** — height relationship, build, posture, gait, handedness;
+- **personality and behavior** — resting tension, gaze habit, gesture vocabulary;
+- **wardrobe** — exact garment layers, fit, materials, footwear, accessories;
+- **mechanical or story state** — dry/wet, clean/injured, intact/damaged, calm/panicked;
+- **performance constraints** — what the actor must do and what must remain recognizable.
 
-1. **Generate** — build the sheet from a prompt Claude writes: moodboard and
-   description first, then **one** production prompt that packs every angle into a
-   single generation.
-2. **Inspect** — check the sheet before anything downstream touches it. A stray rim
-   light, a mismatched face, or plastic skin here bleeds into every shot.
-3. **Edit masked onto the original** — fix flaws with Photoshop masks composited onto
-   the original sheet; never regenerate the whole thing or drift and grime pile up.
-4. **Test in Seedance** — on a good location. The **test is the finish line**, not the
-   generation.
+Create separate versioned assets for mutually exclusive wardrobe, injury, age, and
+mechanical states. Do not combine them in one descriptor or reference sheet.
 
-## Lock identity and state before bulk shooting
+## Select the reference package by the shot
 
-Treat the character asset as a reference image plus a fixed descriptor. Before locking
-it, run at least ten useful tests across pose, distance, and lighting. Test beside the
-other cast and in the actual location light; a face that holds alone may fail in an
-ensemble. Require the critical identity anchors to remain recognizable in every
-approved test.
+The current provider may accept one image, several role-specific references, an Element,
+an AI Cast identity, or another binding mechanism. Verify the live limit, then assign
+roles explicitly.
 
-Create a separate asset and descriptor for every material state change: wet, bloodied,
-wounded, changed wardrobe, transformed body, or another condition the model could mix.
-Do not combine mutually exclusive states in one character description.
+Possible packages include:
 
-## Which model
-- **AI Cast (Cinema Studio)** — fast path when its automatic sheet is sufficient.
-- **Soul Cinema / the current Soul character model** — first manual-generation
-  candidate when the sheet needs direct prompt control.
-- **Nano Banana Pro** — editing a finished sheet **only**; never generating one.
-- **Seedream** — texture recovery on an otherwise approved sheet; not the default for
-  a discrete point edit.
-- **GPT Image 2** — creatures and precise add-ons only (oversharpens human skin; keep
-  it to a small patch).
+- one clean identity portrait for face-dominant shots;
+- portrait plus body/silhouette evidence for wider shots;
+- separate identity and wardrobe references when the provider can distinguish them;
+- front/back or profile evidence when hair, garment construction, or a turn matters;
+- state-specific reference for a wound, wetness, damage, or transformation.
 
-## The character-sheet prompt (production template — works in any model)
+Do not squeeze every view into one crowded sheet merely to look complete. A tiny,
+distorted full-body face can compete with the approved portrait; an omitted rear head
+can also remove necessary hair evidence. A/B test the package in the intended motion
+and exclude the version that creates identity conflict.
 
-Two things **never change**: the deep neutral grey background, and the split into
-columns with a **dominant portrait** (add columns when the character needs them).
-Everything else — the whole `CHARACTER` block — you rewrite through Claude. Claude knows
-what a character sheet is, so start by asking it for the prompt and learn the shape.
+## Fresh-generation rule
 
-```
-character-sheet-prompt.md
-Character reference sheet of a single consistent female character, presented
-on a pure clean deep neutral grey (#3a3a3c) seamless studio background, clean
-editorial layout arranged in three vertical sections, horizontal landscape
-composition read left to right, identical character identity, lighting and color
-grading across every panel for perfect consistency:
+Create a new high-quality source when identity, anatomy, body proportion, overall light,
+or resolution is wrong. Do not repeatedly edit a degraded sheet and promote it as the
+new master. A local patch is acceptable only on an otherwise approved immutable source,
+with the changed region composited as a derivative and its parent hash preserved.
 
-— COLUMN 1 (largest, leftmost): chest-up portrait, front view, head and upper
-chest in frame, sharp focus on the eyes, soft catchlights in both eyes.
+## Model routing
 
-— COLUMN 2: full-body front view, standing relaxed neutral A-pose, arms slightly
-away from the body, weight evenly distributed, full figure head-to-toe inside
-the frame with even margins.
+AI Cast, current Soul routes, Nano Banana, Seedream, GPT Image, and other current models
+are candidates, not fixed character jobs. Check live capabilities and run a controlled
+test for the hardest requirement. A historical tendency such as good skin, precise
+geometry, or strong editing does not prove current identity preservation.
 
-— COLUMN 3 (rightmost): full-body back view, same standing pose mirrored,
-showing hair fall, back posture, garment fit and shoe heels.
+## Stress-test matrix
 
-CHARACTER (must remain identical in all panels): woman, mid-20s, height ~175cm,
-elegant proportions, oval face, sharp high cheekbones, defined but soft jawline,
-straight nose, full natural lips, light scattered freckles across the nose and
-cheeks, clear fair skin with realistic natural texture and subtle imperfections,
-grey-green eyes with detailed iris, well-groomed natural brows, straight auburn
-hair with a center part falling just past the shoulders with a soft natural
-sheen, neutral calm relaxed expression.
+Before asset lock, test only the cases the planned shots need, but cover every relevant
+risk at least once:
 
-LIGHTING & RENDER: clean soft even studio lighting, large diffused key light
-with gentle fill, soft natural shadows, no harsh highlights, true-to-life skin
-tones, neutral white balance, minimal high-fashion editorial presentation,
-polished modern professional model sheet aesthetic, shot on full-frame camera
-with an 85mm lens look, shallow yet controlled depth of field, crisp tack-sharp
-detail, high dynamic range, 8k.
-```
+| Risk | Test evidence |
+| --- | --- |
+| Face identity | close-up and intended expression range |
+| Body/anatomy | required wide crop, sitting/standing, hands and feet visible as needed |
+| View change | profile, back, turn, or camera orbit used by the film |
+| Lighting | darkest and most colored approved scene light |
+| Motion | fastest or most occluded required action |
+| Ensemble | beside the other cast without face or wardrobe leakage |
+| State | each mutually exclusive wardrobe/injury/mechanical version independently |
 
-## The rules that make a sheet Seedance-proof
+Record `required_takes`, `completed_takes`, `recognizable_takes`, the schema-defined
+`NOT_RUN|PASS|FAIL` verdict, and diagnostic notes in `asset.stress_test`. There is no
+magic fixed count. Test until every planned risk has evidence; more repeated easy clips
+do not compensate for one untested hard shot.
 
-- **Portrait = 25–30% of the sheet** — this is where Seedance reads the face; every
-  detail it will ever know comes from those pixels.
-- **Angle the portrait** — slightly off-frontal beats dead-on (reads the head's volume
-  instantly); or add a smaller, separate 3/4 portrait.
-- **Eyes are never black** — iris color must read clearly; crushed-black eyes give
-  Seedance no light info, so tones drift between generations.
-- **Catchlight, or dead eyes** — like a photoshoot or film frame, there's always a glint
-  in the eye.
-- **Break the symmetry** — real faces are symmetric but never perfect; perfect mirroring
-  reads as AI.
-- **No 3D-game-render look** — Seedance recognizes the game-model mood and animates the
-  character like game footage.
-- **Grey is the golden middle** — white bleeds into the video and washes out your
-  location; black eats detail. Deep neutral grey wins.
-- **Remove the small front-view face** — the front full-body face often distorts and
-  competes with the dominant portrait. Remove it so Seedance takes face texture from
-  the large portrait. Keep or remove the rear-view head based on whether hair and back
-  silhouette are continuity evidence; verify the choice with an A/B motion test.
+## Character-reference approval
 
-## Editing characters — surgery, not a redo
+Inspect the reference itself and the stress-test clips. Keep it in `INTERNAL_REVIEW` or
+set `REJECTED` when any of these affect the intended use:
 
-Editing a sheet is surgery. One flaw in the sheet is one flaw in **every** shot
-(a baked-in orange rim light in the portrait tints every downstream generation). You
-never regenerate the whole sheet to fix one flaw.
+- competing faces, ages, hairlines, or body proportions;
+- missing or anatomically broken limbs, hands, feet, or joints;
+- game-render surfaces, waxy skin, edge halos, or baked-in colored rim light;
+- inconsistent garment construction between views;
+- a pose or facial expression that the model reproduces involuntarily in every shot;
+- background or props that activate unwanted scene content;
+- insufficient face pixels for the intended close-up;
+- a hidden face when identity must be proven downstream.
 
-- **Which model:** Nano Banana Pro for most sheet edits (never generating); Seedream
-  for texture recovery; GPT Image for precise add-ons/creatures or the smallest local
-  repair the first route cannot hold. Parallelize only for a deliberate A/B test.
-- **Apply surgically:** every change goes onto the original sheet through Photoshop
-  masks — swap only the region that changed, keep the original untouched everywhere else.
-- **Never regenerate on top of an already-edited sheet** — every pass re-renders the
-  whole frame, so a second edit compounds grime and drift. Mask every change onto the
-  master, always.
+Background color, sheet layout, portrait size, lens look, and view count are testable
+choices. Do not hardcode deep grey, a particular percentage, 85 mm, “8K,” perfect
+symmetry, or shallow focus as universal character-sheet requirements.
 
-## What a SLOP sheet looks like (reject these)
+## Performance continuity
 
-- **The dirty sheet** — a mottled/grimy plate (from repeated whole-sheet re-generations
-  layering grime Seedance treats as part of the asset) **+** a full-body face that
-  doesn't match the portrait (two competing identities → face/build drift). Fix: mask
-  repairs onto the original, then audit again.
-- **The game render** — plastic game-model textures (Seedance repeats and moves like
-  game footage) **+** an orange rim light baked in (bleeds into every generation) **+**
-  a portrait too small (nowhere near 25–30%, so Seedance lacks facial evidence and
-  invents it differently shot to shot).
-- **Standard Nano Banana slop** — mirror symmetry (synthetic look Seedance preserves)
-  **+** soapy poreless skin (reproduced as plastic skin) **+** no dominant portrait (six
-  near-equal tiles, no authoritative face → identity drifts).
+Identity is not only a face. Carry the character's behavior contract into each shot:
+body tension, hesitation, gaze target, breath, gesture preparation, contact with props,
+and recovery after the action. This prevents a visually consistent character from
+performing like an unrelated mannequin.

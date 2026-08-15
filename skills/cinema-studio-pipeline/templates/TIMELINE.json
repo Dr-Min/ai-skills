@@ -1,0 +1,35 @@
+{
+  "$schema": "../schemas/timeline.schema.json",
+  "schema_id": "cinema-studio-pipeline/timeline@2.0.0",
+  "schema_version": "2.0.0",
+  "project_id": "new-project",
+  "timeline_id": "main_timeline",
+  "version": 1,
+  "supersedes_timeline": null,
+  "timebase": {
+    "frame_rate_numerator": 24,
+    "frame_rate_denominator": 1,
+    "drop_frame": false,
+    "audio_sample_rate_hz": 48000
+  },
+  "tracks": [
+    {
+      "track_id": "TRK_V1",
+      "type": "VIDEO",
+      "name": "Primary picture",
+      "order": 1,
+      "locked": false
+    },
+    {
+      "track_id": "TRK_MUSIC",
+      "type": "MUSIC",
+      "name": "Music",
+      "order": 2,
+      "locked": false
+    }
+  ],
+  "clips": [],
+  "events": [],
+  "lock_status": "UNLOCKED",
+  "notes": "Draft v001 seed. Set PICTURE_LOCKED before requesting review; central approval state lives only in 09_approvals. From USER_REVIEW_REQUIRED onward this path is immutable. After approval or rejection, create the next versioned candidate and preserve the terminal predecessor. Final export authority belongs only to delivery.json."
+}

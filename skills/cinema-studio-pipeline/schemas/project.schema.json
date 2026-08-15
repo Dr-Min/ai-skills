@@ -1,0 +1,305 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cinema-studio-pipeline.local/schemas/v2/project.schema.json",
+  "$comment": "MANDATORY: run the companion semantic validator to bind USER_APPROVED gates to current approval records and subject hashes.",
+  "title": "Cinema Studio Project Authority Record",
+  "description": "Authoritative project-level mode, gate, and file-address record.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "schema_version",
+    "project_id",
+    "project_prefix",
+    "title",
+    "execution_mode",
+    "production_mode",
+    "project_status",
+    "current_stage",
+    "review_status",
+    "stage_gates",
+    "approval_policy",
+    "authority_files",
+    "paths"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "pattern": "^(?:\\.\\./)*(?:00_schemas|schemas)/project\\.schema\\.json$" },
+    "schema_id": { "const": "cinema-studio-pipeline/project@2.0.0" },
+    "schema_version": { "const": "2.0.0" },
+    "project_id": { "$ref": "#/$defs/projectId" },
+    "project_prefix": {
+      "type": "string",
+      "pattern": "^[A-Z][A-Z0-9]{1,5}$",
+      "description": "Short collision-resistant prefix used in remote Element names."
+    },
+    "title": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "execution_mode": { "$ref": "#/$defs/executionMode" },
+    "production_mode": { "$ref": "#/$defs/productionMode" },
+    "project_status": {
+      "enum": ["ACTIVE", "ON_HOLD", "COMPLETED", "ARCHIVED"]
+    },
+    "current_stage": { "$ref": "#/$defs/workflowStage" },
+    "review_status": { "$ref": "#/$defs/reviewStatus" },
+    "stage_gates": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "STORY",
+        "STORYBOARD",
+        "LOOKDEV",
+        "ASSET_LOCK",
+        "SHOT_STILL",
+        "RAW_VIDEO",
+        "SOURCE_LIBRARY",
+        "EDIT",
+        "FINISH"
+      ],
+      "properties": {
+        "STORY": { "$ref": "#/$defs/reviewStatus" },
+        "STORYBOARD": { "$ref": "#/$defs/reviewStatus" },
+        "LOOKDEV": { "$ref": "#/$defs/reviewStatus" },
+        "ASSET_LOCK": { "$ref": "#/$defs/reviewStatus" },
+        "SHOT_STILL": { "$ref": "#/$defs/reviewStatus" },
+        "RAW_VIDEO": { "$ref": "#/$defs/reviewStatus" },
+        "SOURCE_LIBRARY": { "$ref": "#/$defs/reviewStatus" },
+        "EDIT": { "$ref": "#/$defs/reviewStatus" },
+        "FINISH": { "$ref": "#/$defs/reviewStatus" }
+      }
+    },
+    "approval_policy": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["user_approval_after_stills", "user_approval_after_video", "allow_automatic_advance"],
+      "properties": {
+        "user_approval_after_stills": { "const": true },
+        "user_approval_after_video": { "const": true },
+        "allow_automatic_advance": { "const": false }
+      }
+    },
+    "authority_files": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "story_contract",
+        "storyboard",
+        "visual_bible",
+        "asset_records_root",
+        "asset_index",
+        "schema_manifest",
+        "source_manifest",
+        "timeline",
+        "delivery_record"
+      ],
+      "properties": {
+        "story_contract": { "$ref": "#/$defs/relativePath" },
+        "storyboard": { "const": "02_storyboard/storyboard.json" },
+        "visual_bible": { "$ref": "#/$defs/relativePath" },
+        "asset_records_root": { "$ref": "#/$defs/relativePath" },
+        "asset_index": { "$ref": "#/$defs/relativePath" },
+        "schema_manifest": { "const": "00_schemas/schema-manifest.json" },
+        "source_manifest": { "$ref": "#/$defs/relativePath" },
+        "timeline": {
+          "allOf": [
+            { "$ref": "#/$defs/relativePath" },
+            {
+              "type": "string",
+              "pattern": "^07_edit/(?:timeline\\.json|records/[a-z][a-z0-9]*(?:_[a-z0-9]+)*/v[0-9]{3,}/timeline\\.json)$"
+            }
+          ]
+        },
+        "delivery_record": {
+          "allOf": [
+            { "$ref": "#/$defs/relativePath" },
+            {
+              "type": "string",
+              "pattern": "^08_delivery/(?:delivery\\.json|records/[a-z][a-z0-9]*(?:_[a-z0-9]+)*/v[0-9]{3,}/delivery\\.json)$"
+            }
+          ]
+        }
+      }
+    },
+    "paths": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "story",
+        "storyboard",
+        "lookdev",
+        "assets",
+        "shots",
+        "source_library",
+        "edit",
+        "delivery",
+        "approvals",
+        "schemas",
+        "logs"
+      ],
+      "properties": {
+        "story": { "$ref": "#/$defs/relativePath" },
+        "storyboard": { "$ref": "#/$defs/relativePath" },
+        "lookdev": { "$ref": "#/$defs/relativePath" },
+        "assets": { "$ref": "#/$defs/relativePath" },
+        "shots": { "$ref": "#/$defs/relativePath" },
+        "source_library": { "$ref": "#/$defs/relativePath" },
+        "edit": { "$ref": "#/$defs/relativePath" },
+        "delivery": { "$ref": "#/$defs/relativePath" },
+        "approvals": { "$ref": "#/$defs/relativePath" },
+        "schemas": { "$ref": "#/$defs/relativePath" },
+        "logs": { "$ref": "#/$defs/relativePath" }
+      }
+    },
+    "defaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "aspect_ratio": { "enum": ["16:9", "9:16", "1:1", "4:3", "2.39:1"] },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "fps": { "type": "number", "exclusiveMinimum": 0, "maximum": 240 },
+        "audio_sample_rate_hz": { "type": "integer", "minimum": 8000 }
+      }
+    },
+    "active_approval_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/approvalId" },
+      "default": []
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "notes": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "anyOf": [
+          { "properties": { "project_status": { "const": "COMPLETED" } }, "required": ["project_status"] },
+          { "properties": { "current_stage": { "const": "COMPLETE" } }, "required": ["current_stage"] }
+        ]
+      },
+      "then": {
+        "required": ["active_approval_ids"],
+        "properties": {
+          "project_status": { "const": "COMPLETED" },
+          "current_stage": { "const": "COMPLETE" },
+          "review_status": { "const": "USER_APPROVED" },
+          "active_approval_ids": { "minItems": 9 },
+          "stage_gates": {
+            "properties": {
+              "STORY": { "const": "USER_APPROVED" },
+              "STORYBOARD": { "const": "USER_APPROVED" },
+              "LOOKDEV": { "const": "USER_APPROVED" },
+              "ASSET_LOCK": { "const": "USER_APPROVED" },
+              "SHOT_STILL": { "const": "USER_APPROVED" },
+              "RAW_VIDEO": { "const": "USER_APPROVED" },
+              "SOURCE_LIBRARY": { "const": "USER_APPROVED" },
+              "EDIT": { "const": "USER_APPROVED" },
+              "FINISH": { "const": "USER_APPROVED" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "current_stage": { "enum": ["STORYBOARD", "LOOKDEV", "ASSET_LOCK", "SHOT_STILL", "RAW_VIDEO", "SOURCE_LIBRARY", "EDIT", "FINISH", "COMPLETE"] } },
+        "required": ["current_stage"]
+      },
+      "then": { "properties": { "stage_gates": { "properties": { "STORY": { "const": "USER_APPROVED" } } } } }
+    },
+    {
+      "if": {
+        "properties": { "current_stage": { "enum": ["LOOKDEV", "ASSET_LOCK", "SHOT_STILL", "RAW_VIDEO", "SOURCE_LIBRARY", "EDIT", "FINISH", "COMPLETE"] } },
+        "required": ["current_stage"]
+      },
+      "then": { "properties": { "stage_gates": { "properties": { "STORYBOARD": { "const": "USER_APPROVED" } } } } }
+    },
+    {
+      "if": {
+        "properties": { "current_stage": { "enum": ["ASSET_LOCK", "SHOT_STILL", "RAW_VIDEO", "SOURCE_LIBRARY", "EDIT", "FINISH", "COMPLETE"] } },
+        "required": ["current_stage"]
+      },
+      "then": { "properties": { "stage_gates": { "properties": { "LOOKDEV": { "const": "USER_APPROVED" } } } } }
+    },
+    {
+      "if": {
+        "properties": { "current_stage": { "enum": ["SHOT_STILL", "RAW_VIDEO", "SOURCE_LIBRARY", "EDIT", "FINISH", "COMPLETE"] } },
+        "required": ["current_stage"]
+      },
+      "then": { "properties": { "stage_gates": { "properties": { "ASSET_LOCK": { "const": "USER_APPROVED" } } } } }
+    },
+    {
+      "if": {
+        "properties": { "current_stage": { "enum": ["RAW_VIDEO", "SOURCE_LIBRARY", "EDIT", "FINISH", "COMPLETE"] } },
+        "required": ["current_stage"]
+      },
+      "then": { "properties": { "stage_gates": { "properties": { "SHOT_STILL": { "const": "USER_APPROVED" } } } } }
+    },
+    {
+      "if": {
+        "properties": { "current_stage": { "enum": ["SOURCE_LIBRARY", "EDIT", "FINISH", "COMPLETE"] } },
+        "required": ["current_stage"]
+      },
+      "then": { "properties": { "stage_gates": { "properties": { "RAW_VIDEO": { "const": "USER_APPROVED" } } } } }
+    },
+    {
+      "if": {
+        "properties": { "current_stage": { "enum": ["EDIT", "FINISH", "COMPLETE"] } },
+        "required": ["current_stage"]
+      },
+      "then": { "properties": { "stage_gates": { "properties": { "SOURCE_LIBRARY": { "const": "USER_APPROVED" } } } } }
+    },
+    {
+      "if": {
+        "properties": { "current_stage": { "enum": ["FINISH", "COMPLETE"] } },
+        "required": ["current_stage"]
+      },
+      "then": { "properties": { "stage_gates": { "properties": { "EDIT": { "const": "USER_APPROVED" } } } } }
+    }
+  ],
+  "$defs": {
+    "projectId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "approvalId": {
+      "type": "string",
+      "pattern": "^APR_[A-Z0-9_]+_[0-9]{3,4}$"
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))(?![A-Za-z]:)(?![\\\\/]).+$"
+    },
+    "executionMode": { "enum": ["GUIDED", "JSON"] },
+    "productionMode": {
+      "enum": ["RAW_SOURCE_FIRST", "ASSEMBLY_WHILE_GENERATING", "CONCEPT_EXPLORATION"]
+    },
+    "workflowStage": {
+      "enum": [
+        "STORY",
+        "STORYBOARD",
+        "LOOKDEV",
+        "ASSET_LOCK",
+        "SHOT_STILL",
+        "RAW_VIDEO",
+        "SOURCE_LIBRARY",
+        "EDIT",
+        "FINISH",
+        "COMPLETE"
+      ]
+    },
+    "reviewStatus": {
+      "enum": [
+        "DRAFT",
+        "INTERNAL_REVIEW",
+        "USER_REVIEW_REQUIRED",
+        "USER_APPROVED",
+        "REJECTED",
+        "SUPERSEDED",
+        "EXCLUDED_FROM_INPUTS",
+        "LEGACY_UNVERIFIED"
+      ]
+    }
+  }
+}

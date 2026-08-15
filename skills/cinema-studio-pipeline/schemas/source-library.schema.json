@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cinema-studio-pipeline.local/schemas/v2/source-library.schema.json",
+  "$comment": "MANDATORY: review state and approval identity live only in the central approval record. SOURCE_LOCKED describes the exact review-candidate membership and must be set before hashing; it is not approval by itself. When a central SOURCE_LIBRARY approval with status USER_REVIEW_REQUIRED or USER_APPROVED targets these exact bytes, verify unique source/take IDs, current approved takes, exact file hashes, coverage closure, and approval evidence. Never mutate a locked candidate after hashing it for review.",
+  "title": "Cinema Studio Source Library Content Authority",
+  "description": "Lockable exact membership of approved, hashed source media; central approval makes the declared lock effective.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "schema_version",
+    "project_id",
+    "library_id",
+    "lock_status",
+    "sources"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "pattern": "^(?:\\.\\./)*(?:00_schemas|schemas)/source-library\\.schema\\.json$" },
+    "schema_id": { "const": "cinema-studio-pipeline/source-library@2.0.0" },
+    "schema_version": { "const": "2.0.0" },
+    "project_id": { "$ref": "#/$defs/projectId" },
+    "library_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+    },
+    "lock_status": { "enum": ["UNLOCKED", "SOURCE_LOCKED"] },
+    "sources": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "#/$defs/source" }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "notes": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "lock_status": { "const": "SOURCE_LOCKED" } },
+        "required": ["lock_status"]
+      },
+      "then": {
+        "properties": {
+          "sources": { "minItems": 1 }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "projectId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "takeId": { "type": "string", "pattern": "^S[0-9]{2,4}_SH[0-9]{3,4}_T[0-9]{2,3}$" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source_id", "take_id", "path", "sha256", "source_status"],
+      "properties": {
+        "source_id": { "type": "string", "pattern": "^SRC_[A-Z0-9_]+$" },
+        "take_id": { "$ref": "#/$defs/takeId" },
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "source_status": { "const": "SOURCE_APPROVED" },
+        "media": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "media_type": { "enum": ["VIDEO", "AUDIO", "IMAGE"] },
+            "duration_seconds": { "type": "number", "minimum": 0 },
+            "width": { "type": "integer", "minimum": 1 },
+            "height": { "type": "integer", "minimum": 1 },
+            "fps": { "type": "number", "exclusiveMinimum": 0 },
+            "audio_sample_rate_hz": { "type": "integer", "minimum": 8000 }
+          }
+        },
+        "handles": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["head_frames", "tail_frames"],
+          "properties": {
+            "head_frames": { "type": "integer", "minimum": 0 },
+            "tail_frames": { "type": "integer", "minimum": 0 }
+          }
+        },
+        "notes": { "type": "string" }
+      }
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))(?![A-Za-z]:)(?![\\\\/]).+$"
+    }
+  }
+}

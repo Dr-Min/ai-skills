@@ -17,6 +17,19 @@ Create one reusable behavior profile before shooting dialogue:
 Keep the voice descriptor verbatim across generations. Rewrite the acting profile for
 the current moment; do not paste the entire biography into every shot.
 
+Treat the fixed descriptor and approved sample as a `VOICE` asset when dialogue spans
+multiple shots. Version and hash the exact descriptor text and sample bytes, approve
+them through the normal ASSET decision, and bind that current voice asset in every
+dependent shot. A changed descriptor is a new candidate, not an invisible prompt edit.
+Every `audio.dialogue[]` line sets `voice_asset_id` to that exact `VOICE` asset, which
+must also be active once in the shot's `AUDIO` role. A generic soundtrack asset does
+not satisfy voice identity.
+Set the VOICE asset's `lineage.parent_asset_id` to the owning character's immutable
+identity asset. The line's `speaker_asset_id` must be an active `IDENTITY` or `STATE`
+character, and its immutable-master identity must match that VOICE owner. Two speakers
+therefore require two explicitly owned VOICE assets; an approved voice from another
+character is still invalid.
+
 ## Five scene controls
 
 For each active character, resolve:
@@ -32,6 +45,10 @@ For each active character, resolve:
 
 Use 2–4 meaningful beat changes for a scene that can support them. A short shot may
 need only one change. Do not overload the available seconds.
+
+In an ensemble, direct one shared external event and then give each visible character
+a separate task, gaze job, and physical channel. Do not prompt a group with one emotion
+word and accept synchronized mannequin reactions.
 
 ## Write the body before the adjective
 
@@ -65,7 +82,7 @@ Keep dialogue in `AUDIO`, separate from timed physical action:
 ```text
 [NAME] voice (verbatim): "[fixed voice descriptor]."
 [NAME] speaks only: "[exact scripted line]."
-[physical and facial response is specified in ACTION TIMING / CHARACTER ACTING].
+[physical and facial response is specified in ACTION_TIMING / CHARACTER_ACTING].
 [everyone without a line remains silent].
 ```
 

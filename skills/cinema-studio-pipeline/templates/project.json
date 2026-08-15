@@ -1,0 +1,62 @@
+{
+  "$schema": "../schemas/project.schema.json",
+  "schema_id": "cinema-studio-pipeline/project@2.0.0",
+  "schema_version": "2.0.0",
+  "project_id": "new-project",
+  "project_prefix": "NEW",
+  "title": "Untitled Cinema Project",
+  "execution_mode": "GUIDED",
+  "production_mode": "RAW_SOURCE_FIRST",
+  "project_status": "ACTIVE",
+  "current_stage": "STORY",
+  "review_status": "DRAFT",
+  "stage_gates": {
+    "STORY": "DRAFT",
+    "STORYBOARD": "DRAFT",
+    "LOOKDEV": "DRAFT",
+    "ASSET_LOCK": "DRAFT",
+    "SHOT_STILL": "DRAFT",
+    "RAW_VIDEO": "DRAFT",
+    "SOURCE_LIBRARY": "DRAFT",
+    "EDIT": "DRAFT",
+    "FINISH": "DRAFT"
+  },
+  "approval_policy": {
+    "user_approval_after_stills": true,
+    "user_approval_after_video": true,
+    "allow_automatic_advance": false
+  },
+  "authority_files": {
+    "story_contract": "01_story/STORY_CONTRACT.md",
+    "storyboard": "02_storyboard/storyboard.json",
+    "visual_bible": "03_lookdev/VISUAL_BIBLE.md",
+    "asset_records_root": "04_assets/records",
+    "asset_index": "04_assets/asset-index.json",
+    "schema_manifest": "00_schemas/schema-manifest.json",
+    "source_manifest": "06_source_library/source_manifest.json",
+    "timeline": "07_edit/timeline.json",
+    "delivery_record": "08_delivery/delivery.json"
+  },
+  "paths": {
+    "story": "01_story",
+    "storyboard": "02_storyboard",
+    "lookdev": "03_lookdev",
+    "assets": "04_assets",
+    "shots": "05_shots",
+    "source_library": "06_source_library",
+    "edit": "07_edit",
+    "delivery": "08_delivery",
+    "approvals": "09_approvals",
+    "schemas": "00_schemas",
+    "logs": "99_logs"
+  },
+  "defaults": {
+    "aspect_ratio": "16:9",
+    "width": 1920,
+    "height": 1080,
+    "fps": 24,
+    "audio_sample_rate_hz": 48000
+  },
+  "active_approval_ids": [],
+  "notes": "INIT_TEMPLATE: replace project identity before production."
+}

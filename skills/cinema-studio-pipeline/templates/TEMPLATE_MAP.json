@@ -1,0 +1,176 @@
+{
+  "schema_version": "2.0.0",
+  "description": "init_project.ps1 seeds ONE, ONE_DERIVED, mappings marked seed_on_init, and reusable templates. Record-creation workflows substitute angle-bracket IDs and rewrite $schema relative to 00_schemas. All nine production subject types keep decision state only in central 09_approvals. Story, storyboard, lookdev, shot, and source-library current paths create an immutable vNNN snapshot before the central approval enters USER_REVIEW_REQUIRED; supporting evidence is mirrored below evidence/<project-relative-path>. Asset and take media are the approval subjects, while their content records are immutable hashed evidence from USER_REVIEW_REQUIRED and any changed candidate receives a new ID. Timeline and delivery seeds are v001 at simple paths; once exact bytes are targeted for review they are immutable, later revisions use versioned_destination, and project authority pointers advance without deleting predecessors.",
+  "schema_directory": "00_schemas",
+  "schema_manifest": {
+    "source": "../schemas/schema-manifest.json",
+    "destination": "00_schemas/schema-manifest.json",
+    "trusted_installed": true
+  },
+  "review_cli": {
+    "prepare": "scripts/prepare_review.py",
+    "decide": "scripts/record_decision.py",
+    "exact_hash_cas_required": true,
+    "first_current_review_only": true,
+    "revision_error": "E_REVISION_WORKFLOW_UNSUPPORTED"
+  },
+  "schema_copies": [
+    "project.schema.json",
+    "asset.schema.json",
+    "shot.schema.json",
+    "storyboard.schema.json",
+    "take.schema.json",
+    "approval.schema.json",
+    "source-library.schema.json",
+    "timeline.schema.json",
+    "delivery.schema.json"
+  ],
+  "mappings": [
+    {
+      "template": "project.json",
+      "destination": "project.json",
+      "schema_path": "00_schemas/project.schema.json",
+      "cardinality": "ONE"
+    },
+    {
+      "template": "STORY_CONTRACT.md",
+      "destination": "01_story/STORY_CONTRACT.md",
+      "review_snapshot_root": "01_story/history/story-contract",
+      "versioned_review_destination": "01_story/history/story-contract/v<version>/STORY_CONTRACT.md",
+      "versioned_review_evidence_destination": "01_story/history/story-contract/v<version>/evidence/<project-relative-path>",
+      "review_version_format": "zero-padded-3-digits",
+      "snapshot_before_approval_status": "USER_REVIEW_REQUIRED",
+      "immutable_review_snapshot": true,
+      "schema_path": null,
+      "cardinality": "ONE"
+    },
+    {
+      "template": "storyboard.json",
+      "destination": "02_storyboard/storyboard.json",
+      "review_snapshot_root": "02_storyboard/history/<storyboard-id>",
+      "versioned_review_destination": "02_storyboard/history/<storyboard-id>/v<version>/storyboard.json",
+      "versioned_review_evidence_destination": "02_storyboard/history/<storyboard-id>/v<version>/evidence/<project-relative-path>",
+      "review_version_format": "zero-padded-3-digits",
+      "snapshot_before_approval_status": "USER_REVIEW_REQUIRED",
+      "immutable_review_snapshot": true,
+      "schema_path": "00_schemas/storyboard.schema.json",
+      "cardinality": "ONE"
+    },
+    {
+      "template": "VISUAL_BIBLE.md",
+      "destination": "03_lookdev/VISUAL_BIBLE.md",
+      "review_snapshot_root": "03_lookdev/history/visual-bible",
+      "versioned_review_destination": "03_lookdev/history/visual-bible/v<version>/VISUAL_BIBLE.md",
+      "versioned_review_evidence_destination": "03_lookdev/history/visual-bible/v<version>/evidence/<project-relative-path>",
+      "review_version_format": "zero-padded-3-digits",
+      "snapshot_before_approval_status": "USER_REVIEW_REQUIRED",
+      "immutable_review_snapshot": true,
+      "schema_path": null,
+      "cardinality": "ONE"
+    },
+    {
+      "template": "CHARACTER_PROFILE.yaml",
+      "destination": "04_assets/records/<asset-id>/CHARACTER_PROFILE.yaml",
+      "schema_path": null,
+      "cardinality": "PER_CHARACTER"
+    },
+    {
+      "template": "LOCATION_MAP.yaml",
+      "destination": "04_assets/records/<asset-id>/LOCATION_MAP.yaml",
+      "schema_path": null,
+      "cardinality": "PER_LOCATION_STATE"
+    },
+    {
+      "template": "ASSET_RECORD.json",
+      "destination": "04_assets/records/<asset-id>/asset.json",
+      "schema_path": "00_schemas/asset.schema.json",
+      "cardinality": "PER_ASSET",
+      "central_subject_type": "ASSET",
+      "subject_authority": "<asset.files.immutable_master.path>",
+      "evidence_record_immutable_after_approval_status": "USER_REVIEW_REQUIRED",
+      "first_review_only": true,
+      "replacement_identity_rule": "NEW_ASSET_ID"
+    },
+    {
+      "template": "ASSET_INDEX.json",
+      "destination": "04_assets/asset-index.json",
+      "schema_path": null,
+      "cardinality": "ONE_DERIVED"
+    },
+    {
+      "template": "SHOT_CARD.json",
+      "destination": "05_shots/<shot-id>/shot.json",
+      "review_snapshot_root": "05_shots/<shot-id>/history",
+      "versioned_review_destination": "05_shots/<shot-id>/history/v<version>/shot.json",
+      "versioned_review_evidence_destination": "05_shots/<shot-id>/history/v<version>/evidence/<project-relative-path>",
+      "review_version_format": "zero-padded-3-digits",
+      "snapshot_before_approval_status": "USER_REVIEW_REQUIRED",
+      "immutable_review_snapshot": true,
+      "schema_path": "00_schemas/shot.schema.json",
+      "cardinality": "PER_SHOT"
+    },
+    {
+      "template": "TAKE_RECORD.json",
+      "destination": "05_shots/<shot-id>/takes/<take-id>/take.json",
+      "schema_path": "00_schemas/take.schema.json",
+      "cardinality": "PER_TAKE",
+      "central_subject_type": "TAKE",
+      "subject_authority": "<take.output_file>",
+      "evidence_record_immutable_after_approval_status": "USER_REVIEW_REQUIRED",
+      "first_review_only": true,
+      "replacement_identity_rule": "NEW_TAKE_ID"
+    },
+    {
+      "template": "SOURCE_MANIFEST.json",
+      "destination": "06_source_library/source_manifest.json",
+      "review_snapshot_root": "06_source_library/history/<library-id>",
+      "versioned_review_destination": "06_source_library/history/<library-id>/v<version>/source_manifest.json",
+      "versioned_review_evidence_destination": "06_source_library/history/<library-id>/v<version>/evidence/<project-relative-path>",
+      "review_version_format": "zero-padded-3-digits",
+      "snapshot_before_approval_status": "USER_REVIEW_REQUIRED",
+      "immutable_review_snapshot": true,
+      "review_candidate_lock_status": "SOURCE_LOCKED",
+      "schema_path": "00_schemas/source-library.schema.json",
+      "cardinality": "ONE"
+    },
+    {
+      "template": "TIMELINE.json",
+      "destination": "07_edit/timeline.json",
+      "versioned_destination": "07_edit/records/<timeline-id>/v<version>/timeline.json",
+      "version_format": "zero-padded-3-digits",
+      "schema_path": "00_schemas/timeline.schema.json",
+      "cardinality": "PER_TIMELINE",
+      "seed_on_init": true,
+      "authority_pointer": "project.authority_files.timeline",
+      "review_candidate_lock_status": "PICTURE_LOCKED",
+      "immutable_after_approval_status": "USER_REVIEW_REQUIRED",
+      "allowed_predecessor_approval_statuses": ["USER_APPROVED", "REJECTED"],
+      "reciprocal_replacement_link_required": true
+    },
+    {
+      "template": "DELIVERY_RECORD.json",
+      "destination": "08_delivery/delivery.json",
+      "versioned_destination": "08_delivery/records/<delivery-id>/v<version>/delivery.json",
+      "version_format": "zero-padded-3-digits",
+      "schema_path": "00_schemas/delivery.schema.json",
+      "cardinality": "PER_DELIVERY",
+      "seed_on_init": true,
+      "authority_pointer": "project.authority_files.delivery_record",
+      "immutable_after_approval_status": "USER_REVIEW_REQUIRED",
+      "allowed_predecessor_approval_statuses": ["USER_APPROVED", "REJECTED"],
+      "reciprocal_replacement_link_required": true
+    },
+    {
+      "template": "APPROVAL.json",
+      "destination": "09_approvals/<approval-id>.json",
+      "schema_path": "00_schemas/approval.schema.json",
+      "cardinality": "PER_APPROVAL"
+    },
+    {
+      "template": "REVIEW_REPORT.md",
+      "destination": "05_shots/<shot-id>/takes/<take-id>/review/REVIEW_REPORT.md",
+      "schema_path": null,
+      "cardinality": "PER_REVIEW"
+    }
+  ]
+}

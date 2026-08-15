@@ -1,0 +1,309 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cinema-studio-pipeline.local/schemas/v2/asset.schema.json",
+  "$comment": "MANDATORY: review state and approval identity live only in the central approval record. When a central ASSET approval with status USER_REVIEW_REQUIRED or USER_APPROVED targets the exact immutable-master bytes, the semantic validator must require a complete, hash-bound asset record, current lookdev evidence, valid lineage, state isolation, verified remote claims where applicable, and all review-ready file hashes. The asset.json evidence record and its media subject are immutable from USER_REVIEW_REQUIRED onward; a changed candidate requires a new asset_id.",
+  "title": "Cinema Studio Asset Content Record",
+  "description": "One immutable asset candidate's descriptor, state, files, lineage, stress test, and remote provenance.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "schema_version",
+    "project_id",
+    "asset_id",
+    "kind",
+    "display_name",
+    "descriptor",
+    "state",
+    "files",
+    "lineage",
+    "remote"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "pattern": "^(?:\\.\\./)*(?:00_schemas|schemas)/asset\\.schema\\.json$" },
+    "schema_id": { "const": "cinema-studio-pipeline/asset@2.0.0" },
+    "schema_version": { "const": "2.0.0" },
+    "project_id": { "$ref": "#/$defs/projectId" },
+    "asset_id": { "$ref": "#/$defs/assetId" },
+    "kind": {
+      "enum": [
+        "CHARACTER",
+        "LOCATION",
+        "PROP",
+        "WARDROBE",
+        "VEHICLE",
+        "CREATURE",
+        "VOICE",
+        "AUDIO",
+        "MOTION_REFERENCE",
+        "STYLE_REFERENCE"
+      ]
+    },
+    "display_name": { "type": "string", "minLength": 1, "maxLength": 200 },
+    "element_tag": {
+      "type": ["string", "null"],
+      "pattern": "^@(loc|char|prop)_[A-Za-z0-9]+(?:_[A-Za-z0-9]+)*$",
+      "description": "Verified remote tag only; null until the service visibly confirms it."
+    },
+    "descriptor": { "type": "string", "minLength": 1 },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "label",
+        "isolation",
+        "visible_truth",
+        "mutually_exclusive_with"
+      ],
+      "properties": {
+        "label": {
+          "type": "string",
+          "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$"
+        },
+        "isolation": { "enum": ["REQUIRED", "NOT_APPLICABLE"] },
+        "visible_truth": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "mutually_exclusive_with": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/assetId" },
+          "uniqueItems": true
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "isolation": { "const": "REQUIRED" } },
+            "required": ["isolation"]
+          },
+          "then": {
+            "properties": { "visible_truth": { "minItems": 1 } }
+          }
+        }
+      ]
+    },
+    "files": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["immutable_master"],
+      "properties": {
+        "immutable_master": { "$ref": "#/$defs/fileRecord" },
+        "approved_reference": {
+          "oneOf": [
+            { "$ref": "#/$defs/fileRecord" },
+            { "type": "null" }
+          ]
+        },
+        "approved_crop": {
+          "oneOf": [
+            { "$ref": "#/$defs/fileRecord" },
+            { "type": "null" }
+          ]
+        }
+      }
+    },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "immutable_master_asset_id",
+        "parent_asset_id",
+        "derivation",
+        "source_files",
+        "input_hashes",
+        "output_sha256"
+      ],
+      "properties": {
+        "immutable_master_asset_id": {
+          "oneOf": [{ "$ref": "#/$defs/assetId" }, { "type": "null" }]
+        },
+        "parent_asset_id": {
+          "oneOf": [{ "$ref": "#/$defs/assetId" }, { "type": "null" }]
+        },
+        "derivation": {
+          "enum": [
+            "GENERATION",
+            "PATCH_FROM_MASTER",
+            "CROP_FROM_MASTER",
+            "EXTRACTED_FRAME",
+            "RECORDED",
+            "IMPORTED"
+          ]
+        },
+        "source_files": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/relativePath" },
+          "uniqueItems": true
+        },
+        "input_hashes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/hashRecord" },
+          "uniqueItems": true
+        },
+        "output_sha256": {
+          "type": ["string", "null"],
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "stress_test": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["required_takes", "completed_takes", "recognizable_takes", "verdict"],
+      "properties": {
+        "required_takes": { "type": "integer", "minimum": 1 },
+        "completed_takes": { "type": "integer", "minimum": 0 },
+        "recognizable_takes": { "type": "integer", "minimum": 0 },
+        "verdict": { "enum": ["NOT_RUN", "PASS", "FAIL"] },
+        "notes": { "type": "string" }
+      }
+    },
+    "remote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "provider",
+        "remote_asset_id",
+        "remote_project_id",
+        "verified",
+        "verified_at",
+        "evidence"
+      ],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "remote_asset_id": { "type": ["string", "null"] },
+        "remote_project_id": { "type": ["string", "null"] },
+        "verified": { "type": "boolean" },
+        "verified_at": { "type": ["string", "null"], "format": "date-time" },
+        "evidence": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/remoteEvidence" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "verified": { "const": true } }, "required": ["verified"] },
+          "then": {
+            "properties": {
+              "remote_asset_id": { "type": "string", "minLength": 1 },
+              "remote_project_id": { "type": "string", "minLength": 1 },
+              "verified_at": { "type": "string", "format": "date-time" },
+              "evidence": { "minItems": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "notes": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "element_tag": { "type": "string" } },
+        "required": ["element_tag"]
+      },
+      "then": {
+        "properties": {
+          "remote": {
+            "properties": { "verified": { "const": true } }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lineage": {
+            "properties": { "derivation": { "enum": ["PATCH_FROM_MASTER", "CROP_FROM_MASTER"] } },
+            "required": ["derivation"]
+          }
+        },
+        "required": ["lineage"]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "properties": {
+              "immutable_master_asset_id": { "$ref": "#/$defs/assetId" },
+              "parent_asset_id": { "$ref": "#/$defs/assetId" },
+              "source_files": { "minItems": 1 },
+              "input_hashes": { "minItems": 1 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lineage": {
+            "properties": { "derivation": { "const": "EXTRACTED_FRAME" } },
+            "required": ["derivation"]
+          }
+        },
+        "required": ["lineage"]
+      },
+      "then": {
+        "properties": {
+          "lineage": {
+            "properties": {
+              "source_files": { "minItems": 1 },
+              "input_hashes": { "minItems": 1 }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "projectId": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+    },
+    "assetId": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$"
+    },
+    "fileRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+        "media_type": { "type": "string", "minLength": 1 },
+        "width": { "type": "integer", "minimum": 1 },
+        "height": { "type": "integer", "minimum": 1 },
+        "duration_seconds": { "type": "number", "minimum": 0 }
+      }
+    },
+    "hashRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "remoteEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "verified_claim"],
+      "properties": {
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "verified_claim": { "type": "string", "minLength": 1 }
+      }
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))(?![A-Za-z]:)(?![\\\\/]).+$"
+    }
+  }
+}

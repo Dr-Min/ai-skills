@@ -1,64 +1,64 @@
-# 06 — Testing in Seedance & spotting slop
+# 06 — Motion stress tests and synthetic-image diagnosis
 
-## Test in Seedance — one variable at a time
+A still is a hypothesis. Test the motion, occlusion, camera relationship, and crop the
+film actually needs, then diagnose the earliest visible failure.
 
-A still is only a **hypothesis**. Run the motion your shot actually needs in Seedance,
-then change **one variable at a time** until the visible failure points to either the
-source asset or the motion direction.
+## One-variable test
 
-- **Start from a baseline you can diagnose.** When the character is the question, keep
-  the location out of it — use a plate that already holds its geometry, depth,
-  materials, and light. A broken plate gives every character failure a second plausible
-  cause.
-- **A percentage cannot approve a shot.** The named source assets, the required motion,
-  and the visible result are the evidence — not a confidence number.
+1. Name the tested asset, shot requirement, and expected visible proof.
+2. Hold all approved references, settings, and prompt sections fixed.
+3. Change one suspect variable.
+4. Inspect first, middle, and last frames plus the first moment of failure.
+5. Classify the failure and record the next test.
 
-### Diagnosing a failing input
-One bad clip is a symptom, not a diagnosis. Compare its **first** failure against the
-source stills, then read the controlled result:
-
-| Verdict | When |
+| Verdict | Evidence |
 | --- | --- |
-| **Source asset** | The defect exists in the source, or stays tied to the same feature when direction changes. |
-| **Motion direction** | The source is clean and the defect changes when only the suspect motion clause changes. |
-| **Inconclusive** (narrow the test) | Controls conflict, or the failure follows neither variable. |
+| **SOURCE_ASSET_FAILURE** | defect is present in the input or stays tied to the same feature across controlled directions |
+| **DIRECTION_FAILURE** | input is clean and failure changes when only the motion/acting/camera direction changes |
+| **MODEL_FAILURE** | required control cannot be expressed or repeatedly fails with sound sources and direction |
+| **INCONCLUSIVE** | more than one variable changed or the evidence does not isolate a cause |
+| **PASS** | intended use holds through the inspected clip and no first failure exists |
 
-The diagnosis applies only to the tested asset and direction — it is **not** a universal
-claim about a model, and one rerun does not guarantee the next result.
+When the character is the variable, use an already approved location. When location
+geometry is the variable, use the simplest approved action. A clip with two broken
+inputs cannot identify its cause.
 
-## Spot the slop
+## Synthetic-image symptom clusters
 
-Slop hides in stills and multiplies in motion. Inspect the **exact crop** you plan to
-use, name the visible defect, then decide whether that crop is safe for Seedance. **A
-visible still-frame defect is already a stop.** Use Seedance only when the crop passes
-the still scan and you need motion to confirm an uncertain edge, reflection, or object.
+Do not name a model as the culprit from one frame. Name the visible symptom:
 
-### The four universal tells
-1. **Light with no transitions** — flat-black pits instead of a smooth shadow ramp; they
-   transfer onto every character you add.
-2. **Broken-but-plausible objects** — crates, railings, hardware you can *almost* read;
-   in motion they turn to mush and multiply.
-3. **Local logic breaks** — an effect in only part of the frame (rain that scratches one
-   corner); Seedance's logic breaks with it.
-4. **Oily textures** — soapy surfaces lose their material; reflections crawl in motion,
-   so the plate cannot hold continuity.
+- **flat or discontinuous light** — crushed pits, unmotivated highlights, shadows that
+  change direction;
+- **broken topology** — plausible-looking hands, limbs, railings, furniture, hardware,
+  or reflections that cannot survive motion;
+- **uniform treatment** — identical sharpness, noise, or surface pattern across skin,
+  fabric, metal, and background;
+- **plastic material response** — oily, waxy, soapy, or game-render surfaces;
+- **composition cliché** — automatic symmetry, centered subject, generic shallow focus,
+  neon/fog/debris added without story function;
+- **motion without intention** — mannequin acting, robotic interpolation, floating
+  contact, or camera movement that merely decorates a static beat;
+- **local logic break** — rain, smoke, hair, cloth, shadow, or particles behaving in
+  only part of the frame;
+- **temporal identity drift** — face, age, wardrobe, prop state, or anatomy changing
+  between frames.
 
-### Two model "accents" (name the culprit from one frame)
-- **Banana slop (Nano Banana Pro)** — ruler-straight symmetry, everything parallel and
-  set square, flat light/color with no contrast play → pretty but staged and lifeless,
-  like stock photography. Textures detailed yet read as a 3D render, not a photograph.
-  **Hyperbolizes every edit:** ask for graffiti on a wall and the whole location gets
-  tagged; ask for "more alive and cinematic" and it litters the frame with junk and dirt.
-- **GPT slop (GPT Image 2)** — sharpness and microcontrast cranked to the ceiling, hard
-  halos on every edge; no depth (everything in focus, no bokeh, no plane separation);
-  white balance pulled warm until the frame yellows; materials go plastic and
-  licked-smooth; dynamic range squeezed to the middle so shadows and highlights meet
-  halfway and the frame goes limp. **Most damning tell:** a single sickly texture pattern
-  laid over the entire frame (the same film-wrap pattern on cabinets and car bodies
-  alike).
+Different models may show different combinations over time. Record the actual model ID
+and setting with the clip, but keep the diagnosis tied to observable evidence.
 
-### Calibrate your eye
-Stare at clean frames until your eye runs the checks automatically — good material
-under one light (surf, black rock, wet foliage reading as material under one grey sky).
-Higgsfield ships a dedicated **Spot the Slop practice app** (deeper pool of real frames,
-timed rounds, no repeats); run it before choosing a location or approving a final shot.
+## Stop conditions
+
+- A visible source defect in the intended crop is already a stop; more motion is not a
+  repair strategy.
+- After repeated controlled failure, simplify the shot, split the action, change the
+  generation mode, or return to the earliest broken asset.
+- Do not hide failure with arbitrary speed changes, frame interpolation, aggressive
+  sharpening, grain, glow, or a faster edit.
+- Do not approve by confidence score or generation success message.
+
+## Review evidence
+
+Extract deterministic review frames and a contact sheet, but inspect the original video
+too. A contact sheet can reveal drift; it cannot prove motion quality, audio, or sync.
+Record exact time/frame, symptom, affected asset, intended use, and one schema-defined
+`take.diagnosis.verdict`; use `NOT_REVIEWED` until the inspection is complete.

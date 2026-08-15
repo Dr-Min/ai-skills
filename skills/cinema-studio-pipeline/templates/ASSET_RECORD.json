@@ -1,0 +1,49 @@
+{
+  "$schema": "../schemas/asset.schema.json",
+  "schema_id": "cinema-studio-pipeline/asset@2.0.0",
+  "schema_version": "2.0.0",
+  "project_id": "new-project",
+  "asset_id": "asset_placeholder",
+  "kind": "CHARACTER",
+  "display_name": "REPLACE WITH ASSET NAME",
+  "element_tag": null,
+  "descriptor": "REPLACE_WITH_VERBATIM_APPROVED_DESCRIPTOR",
+  "state": {
+    "label": "base",
+    "isolation": "REQUIRED",
+    "visible_truth": ["REPLACE_WITH_WHAT_IS_VISIBLY_TRUE"],
+    "mutually_exclusive_with": []
+  },
+  "files": {
+    "immutable_master": {
+      "path": "04_assets/records/asset_placeholder/immutable_master.ext",
+      "sha256": null
+    },
+    "approved_reference": null,
+    "approved_crop": null
+  },
+  "lineage": {
+    "immutable_master_asset_id": null,
+    "parent_asset_id": null,
+    "derivation": "IMPORTED",
+    "source_files": [],
+    "input_hashes": [],
+    "output_sha256": null
+  },
+  "stress_test": {
+    "required_takes": 10,
+    "completed_takes": 0,
+    "recognizable_takes": 0,
+    "verdict": "NOT_RUN",
+    "notes": "Run across useful pose, distance, lighting, co-star, and location conditions."
+  },
+  "remote": {
+    "provider": "Higgsfield",
+    "remote_asset_id": null,
+    "remote_project_id": null,
+    "verified": false,
+    "verified_at": null,
+    "evidence": []
+  },
+  "notes": "INIT_TEMPLATE: substitute this per-asset content record. Approval state exists only in 09_approvals. Once a central USER_REVIEW_REQUIRED approval hashes this record as evidence, do not mutate it; create a new asset_id candidate."
+}

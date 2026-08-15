@@ -38,7 +38,18 @@
 4. timed shot list와 blocking summary를 먼저 승인받습니다.
 5. 선택한 러프니스 레벨로 보드를 생성합니다.
 6. 실제 이미지에서 화살표, 고스트 위치, 시선, 접촉, 출입과 카메라 축을 확인합니다.
-7. JSON을 검증하고 README·CSV·요약 파일을 내보냅니다.
+7. 복잡한 다인물·가림·깊이 장면만 선택적으로 공간 제어 패킷과 맵을 만듭니다.
+8. JSON을 검증하고 README·CSV·요약 파일을 내보냅니다.
+
+## 선택적 공간 제어 패킷
+
+다인물 대화, 복잡한 가림, 전후 깊이처럼 텍스트만으로 공간 관계가 흔들리는 쇼트에는 승인된 스토리보드에서 파생한 공간 제어 패킷을 붙일 수 있습니다.
+
+- `review map`: 사람이 위치·동선·깊이를 검수하는 그림
+- `clean map`: 선언한 배경색과 개체별 단색만 사용해 얼굴·의상·재질·조명·스타일·문자를 제거하고 구조만 모델에 전달하는 PNG
+- packet JSON: 원본 쇼트, 프레임 구간, 화면비, 정규화 좌표, 깊이, 사건과 가림 관계, 파일 SHA-256을 결속
+
+이 패킷은 새로운 생성 모드나 승인 권한이 아닙니다. 승인된 보드의 보조 증거이며, 모든 쇼트에 만들 필요도 없습니다. 검증기는 경로 탈출, 해시 불일치, 잘못된 PNG, 화면비 불일치, 선언되지 않은 픽셀 색상, 중복 색상·참여자·가림 관계, NaN/Infinity 좌표를 실패 처리합니다. 단, 허용된 단색으로 그린 문자나 장식까지 의미적으로 판별하지는 못하므로 사람 검수도 필요합니다.
 
 ## 네 가지 보드 수준
 
@@ -55,6 +66,7 @@
 
 ```bash
 python install.py --no-law-mcp --skills timed-storyboard
+python -m pip install -r skills/timed-storyboard/requirements.txt
 ```
 
 ```powershell
@@ -66,6 +78,10 @@ python skills/timed-storyboard/scripts/storyboard_plan.py validate `
 
 python skills/timed-storyboard/scripts/storyboard_plan.py export `
   --plan project-dir/storyboard_plan.json --output project-dir
+
+python skills/timed-storyboard/scripts/validate_spatial_control.py `
+  --project-root project-dir `
+  --packet project-dir/control-maps/S001/spatial-control.json
 ```
 
 ## 결과물
@@ -76,6 +92,8 @@ python skills/timed-storyboard/scripts/storyboard_plan.py export `
 - `shotlist.csv`: 쇼트 목록
 - `action_timeline.csv`: 액션 단계
 - `motion_paths.csv`: 인물·소품·카메라 경로
+- 선택적 `spatial-control.json`: 쇼트 프레임·좌표·깊이·증거 해시 패킷
+- 선택적 review/clean PNG: 사람 검수용 지도와 모델 입력용 구조 지도
 
 ## 포함 파일
 
@@ -83,12 +101,20 @@ python skills/timed-storyboard/scripts/storyboard_plan.py export `
 timed-storyboard/
 ├─ SKILL.md
 ├─ README.md
-├─ assets/storyboard-levels-1-4.png
+├─ requirements.txt
+├─ assets/
+│  ├─ storyboard-levels-1-4.png
+│  └─ spatial-control-packet.template.json
 ├─ references/
 │  ├─ motion-notation.md
 │  ├─ output-contract.md
-│  └─ roughness-levels.md
-└─ scripts/storyboard_plan.py
+│  ├─ production-control-maps.md
+│  ├─ roughness-levels.md
+│  └─ spatial-control-packet.schema.json
+├─ scripts/
+│  ├─ storyboard_plan.py
+│  └─ validate_spatial_control.py
+└─ tests/
 ```
 
 ## 완료 기준
@@ -98,4 +124,5 @@ timed-storyboard/
 - 움직이는 모든 대상과 카메라에 경로 또는 정지 선언이 있음
 - 시선, 소품 이동, 배우 이동, 카메라 이동을 서로 분리함
 - 선택한 보드 수준과 실제 이미지가 일치함
+- 공간 제어 패킷을 썼다면 clean map의 PNG·화면비·SHA-256과 모든 구조 관계가 검증됨
 - JSON과 사람용 내보내기 파일이 모두 검증됨

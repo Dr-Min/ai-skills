@@ -1,0 +1,63 @@
+{
+  "manifest_id": "cinema-studio-pipeline/schema-manifest@2.0.0",
+  "manifest_version": "2.0.0",
+  "hash_algorithm": "SHA-256",
+  "scope": "TRUSTED_INSTALLED_CANONICAL_SCHEMAS",
+  "schema_count": 9,
+  "schemas": [
+    {
+      "filename": "approval.schema.json",
+      "schema_id": "cinema-studio-pipeline/approval@2.0.0",
+      "schema_version": "2.0.0",
+      "sha256": "ff568c47230f28f041a55bff176d385a72af9120467e9c0ab029c5448dea0c01"
+    },
+    {
+      "filename": "asset.schema.json",
+      "schema_id": "cinema-studio-pipeline/asset@2.0.0",
+      "schema_version": "2.0.0",
+      "sha256": "5c079cc32362665b6a8ca6c0d2d217073f966c6b3b10b8becd725b0e2db1d999"
+    },
+    {
+      "filename": "delivery.schema.json",
+      "schema_id": "cinema-studio-pipeline/delivery@2.0.0",
+      "schema_version": "2.0.0",
+      "sha256": "096e89755e33d5ae624eb2dc8fbffeef329b4d31e360bb5668d443daf1bf8381"
+    },
+    {
+      "filename": "project.schema.json",
+      "schema_id": "cinema-studio-pipeline/project@2.0.0",
+      "schema_version": "2.0.0",
+      "sha256": "40e87a10ee8632a5e0cd48b27c6ae4322db7bddead54df5ea68d7bd5d81f9789"
+    },
+    {
+      "filename": "shot.schema.json",
+      "schema_id": "cinema-studio-pipeline/shot@2.0.0",
+      "schema_version": "2.0.0",
+      "sha256": "ece5f6125d79747c39881756b193839d85562689c6f3f887656219e28d6c2648"
+    },
+    {
+      "filename": "source-library.schema.json",
+      "schema_id": "cinema-studio-pipeline/source-library@2.0.0",
+      "schema_version": "2.0.0",
+      "sha256": "7fc680102c360e56788b0d763594489fe7c1eb2a42f977a6e69db2d596e2a39d"
+    },
+    {
+      "filename": "storyboard.schema.json",
+      "schema_id": "cinema-studio-pipeline/storyboard@2.0.0",
+      "schema_version": "2.0.0",
+      "sha256": "eae33ec38d0be00fa8b418f082ffa422345e5842524a952c063c3718a18e3807"
+    },
+    {
+      "filename": "take.schema.json",
+      "schema_id": "cinema-studio-pipeline/take@2.0.0",
+      "schema_version": "2.0.0",
+      "sha256": "ce9a4e60a9f2bc985a90b650f4900b1434edb7463658fa8de66c758ce0b67305"
+    },
+    {
+      "filename": "timeline.schema.json",
+      "schema_id": "cinema-studio-pipeline/timeline@2.0.0",
+      "schema_version": "2.0.0",
+      "sha256": "e2e61f47cf9498e43591c8fa90de8d09d24b52d67ec7da99657e93adbba68a63"
+    }
+  ]
+}

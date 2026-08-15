@@ -1,0 +1,69 @@
+{
+  "$schema": "../schemas/delivery.schema.json",
+  "schema_id": "cinema-studio-pipeline/delivery@2.0.0",
+  "schema_version": "2.0.0",
+  "project_id": "new-project",
+  "delivery_id": "final_delivery",
+  "version": 1,
+  "supersedes_delivery": null,
+  "source_timeline": {
+    "timeline_id": null,
+    "path": null,
+    "sha256": null
+  },
+  "export": {
+    "path": null,
+    "sha256": null,
+    "media": {
+      "media_type": null,
+      "width": null,
+      "height": null,
+      "duration_seconds": null,
+      "frame_rate_numerator": null,
+      "frame_rate_denominator": null,
+      "audio_present": false,
+      "audio_sample_rate_hz": null,
+      "audio_channels": null
+    }
+  },
+  "derivation": {
+    "execution_origin": "LOCAL_PROCESSING",
+    "tool": {
+      "name": null,
+      "version": null,
+      "verified": false,
+      "verified_at": null
+    },
+    "settings": {},
+    "input_hashes": []
+  },
+  "qa": {
+    "overall_verdict": "NOT_REVIEWED",
+    "media_integrity": {
+      "status": "NOT_REVIEWED",
+      "evidence": [],
+      "reason": null
+    },
+    "frame_integrity": {
+      "status": "NOT_REVIEWED",
+      "evidence": [],
+      "reason": null
+    },
+    "audio_sync": {
+      "status": "NOT_REVIEWED",
+      "evidence": [],
+      "reason": null
+    },
+    "crop_safety": {
+      "status": "NOT_REVIEWED",
+      "evidence": [],
+      "reason": null
+    },
+    "rights_clearance": {
+      "status": "NOT_REVIEWED",
+      "evidence": [],
+      "reason": null
+    }
+  },
+  "notes": "Draft v001 seed: audio_present=false is the explicit silent default; set it true and populate audio metadata when an audio stream exists. Approval state lives only in 09_approvals. Never overwrite bytes targeted by USER_REVIEW_REQUIRED, USER_APPROVED, or REJECTED; create a unique later-version path, preserve the terminal predecessor, and advance project.authority_files.delivery_record."
+}

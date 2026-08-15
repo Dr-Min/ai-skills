@@ -1,0 +1,63 @@
+schema_version: 1
+provider: "higgsfield"
+verified_at: "2026-08-11"
+stale_after_days: 30
+authority: "authenticated live UI or official current documentation"
+rule: "Treat every mutable capability below as guidance until verified for the active account and model."
+
+dynamic_fields:
+  - "available model IDs and versions"
+  - "reference image, video, and audio limits"
+  - "supported generation modes"
+  - "duration, aspect, resolution, and quality options"
+  - "audio and lip-sync behavior"
+  - "credit cost, availability, and plan restrictions"
+
+routes:
+  character_generation:
+    preferred_family: "current Soul character route or Cinema Studio AI Cast"
+    verify_live:
+      - "identity-reference support"
+      - "aspect and quality controls"
+      - "reference count"
+  cinematic_still_generation:
+    preferred_family: "current Soul Cinema route"
+    verify_live:
+      - "reference support"
+      - "available aspect ratios"
+      - "identity binding"
+  general_image_edit:
+    preferred_family: "current Nano Banana Pro route"
+    verify_live:
+      - "edit mode"
+      - "resolution"
+      - "reference count"
+  texture_recovery:
+    preferred_family: "current Seedream route"
+    verify_live:
+      - "image-edit support"
+      - "output resolution"
+  local_detail_or_view_change:
+    preferred_family: "current GPT Image route"
+    verify_live:
+      - "edit and reference support"
+      - "view-change behavior"
+  video_generation:
+    preferred_family: "current Seedance route"
+    verify_live:
+      - "text/reference/boundary/motion/audio modes"
+      - "reference budgets"
+      - "duration and resolution"
+      - "generated-audio settings"
+      - "dedicated structural control-map or depth-guidance input"
+      - "retention of an optical look from text versus an approved carrier plate"
+
+proof_fields:
+  - "provider_project_id"
+  - "provider_folder_id"
+  - "element_id_or_tag"
+  - "generation_job_id"
+  - "actual_model_id"
+  - "actual_ui_settings"
+  - "verified_at"
+  - "local_output_hash"

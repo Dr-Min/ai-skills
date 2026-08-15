@@ -1,0 +1,498 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cinema-studio-pipeline.local/schemas/v2/shot.schema.json",
+  "$comment": "MANDATORY: review state and approval identity live only in the central approval record. When a central SHOT_STILL approval with status USER_REVIEW_REQUIRED or USER_APPROVED targets these exact shot.json bytes, the semantic validator must require nonempty storyboard/coverage IDs, a complete dependency_snapshot, the mode-specific still-evidence cardinality, exact evidence bytes/hashes, and every existing scene/plan/dependency/reference rule. A non-boundary STILL may have asset_id null; START/END must bind approved boundary assets. Approval evidence includes shot.json and all visible stills. Do not mutate this content authority after hashing it for review.",
+  "title": "Cinema Studio Shot Authority Record",
+  "description": "One diagnosable shot content authority with story purpose, approved dependency bindings, active references, spatial law, timing, and prompt.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "schema_version",
+    "project_id",
+    "scene_id",
+    "shot_id",
+    "storyboard_panel_ids",
+    "coverage_requirement_ids",
+    "dependency_snapshot",
+    "story_purpose",
+    "edit_purpose",
+    "format_mode",
+    "duration_seconds",
+    "active_assets",
+    "still_evidence",
+    "spatial",
+    "camera",
+    "action_timing",
+    "audio",
+    "continuity",
+    "prompt",
+    "failure_conditions"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "pattern": "^(?:\\.\\./)*(?:00_schemas|schemas)/shot\\.schema\\.json$" },
+    "schema_id": { "const": "cinema-studio-pipeline/shot@2.0.0" },
+    "schema_version": { "const": "2.0.0" },
+    "project_id": { "$ref": "#/$defs/projectId" },
+    "scene_id": { "$ref": "#/$defs/sceneId" },
+    "shot_id": { "$ref": "#/$defs/shotId" },
+    "storyboard_panel_ids": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/panelId" },
+      "uniqueItems": true,
+      "default": []
+    },
+    "coverage_requirement_ids": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/coverageId" },
+      "uniqueItems": true,
+      "default": []
+    },
+    "dependency_snapshot": {
+      "oneOf": [{ "$ref": "#/$defs/dependencySnapshot" }, { "type": "null" }]
+    },
+    "story_purpose": { "type": "string", "minLength": 1 },
+    "edit_purpose": { "type": "string", "minLength": 1 },
+    "format_mode": { "$ref": "#/$defs/formatMode" },
+    "duration_seconds": { "type": "number", "exclusiveMinimum": 0, "maximum": 60 },
+    "active_assets": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/activeAsset" }
+    },
+    "still_evidence": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/stillEvidence" },
+      "uniqueItems": true
+    },
+    "boundary_frames": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "start_asset_id": {
+          "oneOf": [{ "$ref": "#/$defs/assetId" }, { "type": "null" }]
+        },
+        "end_asset_id": {
+          "oneOf": [{ "$ref": "#/$defs/assetId" }, { "type": "null" }]
+        },
+        "arrival_rule": { "type": "string" }
+      }
+    },
+    "motion_reference_asset_ids": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/assetId" },
+      "uniqueItems": true,
+      "default": []
+    },
+    "spatial": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "location_asset_id",
+        "location_map_path",
+        "screen_direction",
+        "axis_rule",
+        "first_frame_occupancy",
+        "geography_constants"
+      ],
+      "properties": {
+        "location_asset_id": {
+          "oneOf": [{ "$ref": "#/$defs/assetId" }, { "type": "null" }]
+        },
+        "location_map_path": {
+          "oneOf": [{ "$ref": "#/$defs/relativePath" }, { "type": "null" }]
+        },
+        "control_packet": {
+          "oneOf": [{ "$ref": "#/$defs/fileEvidence" }, { "type": "null" }],
+          "description": "Optional validated timed-storyboard spatial packet. When present, SHOT_STILL review must include the packet and both hash-bound map outputs as approval evidence."
+        },
+        "screen_direction": {
+          "enum": ["LEFT_TO_RIGHT", "RIGHT_TO_LEFT", "CAMERA_AXIS", "NOT_APPLICABLE"]
+        },
+        "axis_rule": { "type": "string" },
+        "first_frame_occupancy": { "type": "string", "minLength": 1 },
+        "geography_constants": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "camera": { "$ref": "#/$defs/camera" },
+    "action_timing": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["beat_id", "start_seconds", "end_seconds", "action"],
+        "properties": {
+          "beat_id": { "type": "string", "pattern": "^B[0-9]{2,3}$" },
+          "start_seconds": { "type": "number", "minimum": 0 },
+          "end_seconds": { "type": "number", "exclusiveMinimum": 0 },
+          "action": { "type": "string", "minLength": 1 },
+          "actor_asset_ids": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/assetId" },
+            "uniqueItems": true
+          },
+          "micro_event": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "audio": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "dialogue", "ambience", "sfx", "music_event_ids"],
+      "properties": {
+        "mode": {
+          "enum": ["SFX_ONLY_NO_MUSIC", "PRODUCTION_SOUND", "MUSIC_LIPSYNC", "SILENT"]
+        },
+        "dialogue": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["speaker_asset_id", "line", "start_seconds", "end_seconds"],
+            "properties": {
+              "speaker_asset_id": {
+                "oneOf": [{ "$ref": "#/$defs/assetId" }, { "type": "null" }]
+              },
+              "line": { "type": "string", "minLength": 1 },
+              "start_seconds": { "type": "number", "minimum": 0 },
+              "end_seconds": { "type": "number", "exclusiveMinimum": 0 },
+              "voice_asset_id": {
+                "oneOf": [{ "$ref": "#/$defs/assetId" }, { "type": "null" }]
+              }
+            }
+          }
+        },
+        "ambience": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "sfx": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "music_event_ids": {
+          "type": "array",
+          "items": { "type": "string", "pattern": "^EVT_[A-Z0-9_]+$" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "continuity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["previous_shot_id", "next_shot_id", "preserve", "state_asset_ids"],
+      "properties": {
+        "previous_shot_id": {
+          "oneOf": [{ "$ref": "#/$defs/shotId" }, { "type": "null" }]
+        },
+        "next_shot_id": {
+          "oneOf": [{ "$ref": "#/$defs/shotId" }, { "type": "null" }]
+        },
+        "preserve": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "state_asset_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/assetId" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "prompt": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["version", "previous_version", "changed_section", "exact_text", "blocks", "reference_budget"],
+      "properties": {
+        "version": { "type": "integer", "minimum": 1 },
+        "previous_version": { "type": ["integer", "null"], "minimum": 1 },
+        "changed_section": {
+          "type": ["string", "null"],
+          "enum": [
+            null,
+            "SCENE_CONTEXT",
+            "ACTIVE_REFERENCES",
+            "LOCATION_MAP",
+            "FIRST_FRAME_AND_SPATIAL_BLOCKING",
+            "FORMAT_MODE",
+            "OPTICS",
+            "CAMERA",
+            "ACTION_TIMING",
+            "PHYSICS",
+            "LIGHTING",
+            "AUDIO",
+            "CHARACTER_ACTING",
+            "STYLE",
+            "QUALITY",
+            "POSITIVE_CONSTRAINTS"
+          ]
+        },
+        "exact_text": { "type": "string" },
+        "blocks": { "$ref": "#/$defs/promptBlocks" },
+        "reference_budget": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["images", "videos", "audio"],
+          "properties": {
+            "images": { "type": "integer", "minimum": 0, "maximum": 9 },
+            "videos": { "type": "integer", "minimum": 0, "maximum": 3 },
+            "audio": { "type": "integer", "minimum": 0, "maximum": 3 }
+          }
+        }
+      }
+    },
+    "failure_conditions": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "notes": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "format_mode": { "const": "BOUNDARY_FRAME" } },
+        "required": ["format_mode"]
+      },
+      "then": {
+        "required": ["boundary_frames"],
+        "properties": {
+          "boundary_frames": {
+            "required": ["start_asset_id", "end_asset_id"],
+            "properties": {
+              "start_asset_id": { "$ref": "#/$defs/assetId" },
+              "end_asset_id": { "$ref": "#/$defs/assetId" }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "format_mode": { "const": "MOTION_REFERENCE" } },
+        "required": ["format_mode"]
+      },
+      "then": {
+        "properties": { "motion_reference_asset_ids": { "minItems": 1 } },
+        "required": ["motion_reference_asset_ids"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "format_mode": { "const": "MUSIC_LIPSYNC" } },
+        "required": ["format_mode"]
+      },
+      "then": {
+        "properties": {
+          "audio": {
+            "properties": { "mode": { "const": "MUSIC_LIPSYNC" } }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "projectId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "sceneId": { "type": "string", "pattern": "^S[0-9]{2,4}$" },
+    "shotId": { "type": "string", "pattern": "^S[0-9]{2,4}_SH[0-9]{3,4}$" },
+    "panelId": { "type": "string", "pattern": "^S[0-9]{2,4}_P[0-9]{3,4}$" },
+    "coverageId": { "type": "string", "pattern": "^COV_[A-Z0-9]+(?:_[A-Z0-9]+)*$" },
+    "assetId": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$" },
+    "approvalId": { "type": "string", "pattern": "^APR_[A-Z0-9_]+_[0-9]{3,4}$" },
+    "formatMode": {
+      "enum": ["REFERENCE_TEXT_NATIVE", "BOUNDARY_FRAME", "MOTION_REFERENCE", "MUSIC_LIPSYNC"]
+    },
+    "activeAsset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["asset_id", "role"],
+      "properties": {
+        "asset_id": { "$ref": "#/$defs/assetId" },
+        "role": {
+          "enum": ["IDENTITY", "WARDROBE", "STATE", "LOCATION_GEOMETRY", "MATERIAL_LIGHT", "PROP_FUNCTION", "MOTION", "AUDIO", "STYLE"]
+        },
+        "state_label": { "type": "string", "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$" },
+        "prompt_descriptor_verbatim": { "type": "string" }
+      }
+    },
+    "approvalBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subject_type",
+        "subject_id",
+        "approval_id",
+        "review_status",
+        "subject_sha256",
+        "authority_path",
+        "approval_record_path"
+      ],
+      "properties": {
+        "subject_type": { "enum": ["STORY", "STORYBOARD", "LOOKDEV"] },
+        "subject_id": { "type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+        "approval_id": { "$ref": "#/$defs/approvalId" },
+        "review_status": { "const": "USER_APPROVED" },
+        "subject_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "authority_path": { "$ref": "#/$defs/relativePath" },
+        "approval_record_path": { "$ref": "#/$defs/approvalRecordPath" }
+      }
+    },
+    "assetApprovalBinding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "subject_type",
+        "asset_id",
+        "subject_id",
+        "approval_id",
+        "review_status",
+        "subject_sha256",
+        "authority_path",
+        "approval_record_path"
+      ],
+      "properties": {
+        "subject_type": { "const": "ASSET" },
+        "asset_id": { "$ref": "#/$defs/assetId" },
+        "subject_id": { "type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+        "approval_id": { "$ref": "#/$defs/approvalId" },
+        "review_status": { "const": "USER_APPROVED" },
+        "subject_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "authority_path": { "$ref": "#/$defs/relativePath" },
+        "approval_record_path": { "$ref": "#/$defs/approvalRecordPath" }
+      }
+    },
+    "dependencySnapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["project_id", "captured_at", "story", "storyboard", "lookdev", "required_assets"],
+      "properties": {
+        "project_id": { "$ref": "#/$defs/projectId" },
+        "captured_at": { "type": "string", "format": "date-time" },
+        "story": {
+          "allOf": [
+            { "$ref": "#/$defs/approvalBinding" },
+            { "properties": { "subject_type": { "const": "STORY" } } }
+          ]
+        },
+        "storyboard": {
+          "allOf": [
+            { "$ref": "#/$defs/approvalBinding" },
+            { "properties": { "subject_type": { "const": "STORYBOARD" } } }
+          ]
+        },
+        "lookdev": {
+          "allOf": [
+            { "$ref": "#/$defs/approvalBinding" },
+            { "properties": { "subject_type": { "const": "LOOKDEV" } } }
+          ]
+        },
+        "required_assets": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/assetApprovalBinding" }
+        }
+      }
+    },
+    "approvalRecordPath": {
+      "allOf": [
+        { "$ref": "#/$defs/relativePath" },
+        { "type": "string", "pattern": "^09_approvals/APR_[A-Z0-9_]+_[0-9]{3,4}\\.json$" }
+      ]
+    },
+    "stillEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["role", "asset_id", "path", "sha256"],
+      "properties": {
+        "role": { "enum": ["STILL", "START", "END"] },
+        "asset_id": {
+          "oneOf": [{ "$ref": "#/$defs/assetId" }, { "type": "null" }]
+        },
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "role": { "enum": ["START", "END"] } },
+            "required": ["role"]
+          },
+          "then": {
+            "properties": { "asset_id": { "$ref": "#/$defs/assetId" } }
+          }
+        }
+      ]
+    },
+    "fileEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "camera": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["shot_size", "angle", "movement"],
+      "properties": {
+        "shot_size": {
+          "enum": ["EXTREME_WIDE", "WIDE", "MEDIUM_WIDE", "MEDIUM", "MEDIUM_CLOSE_UP", "CLOSE_UP", "EXTREME_CLOSE_UP", "INSERT", "POV"]
+        },
+        "angle": {
+          "enum": ["EYE_LEVEL", "LOW", "HIGH", "DUTCH", "OVERHEAD", "GROUND_LEVEL", "OVER_SHOULDER", "REAR_VIEW", "CUSTOM"]
+        },
+        "movement": {
+          "enum": ["LOCKED", "STATIC_HANDHELD", "PAN", "TILT", "DOLLY", "TRACK", "CRANE", "ORBIT", "PUSH_IN", "PULL_OUT", "RACK_FOCUS", "CUSTOM"]
+        },
+        "fov_degrees": { "type": "number", "minimum": 1, "maximum": 180 },
+        "height_meters": { "type": "number", "minimum": 0 },
+        "subject_distance_meters": { "type": "number", "exclusiveMinimum": 0 },
+        "composition": { "type": "string" },
+        "observation_pattern": { "type": "string" }
+      }
+    },
+    "promptBlocks": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "SCENE_CONTEXT",
+        "ACTIVE_REFERENCES",
+        "LOCATION_MAP",
+        "FIRST_FRAME_AND_SPATIAL_BLOCKING",
+        "FORMAT_MODE",
+        "OPTICS",
+        "CAMERA",
+        "ACTION_TIMING",
+        "PHYSICS",
+        "LIGHTING",
+        "AUDIO",
+        "CHARACTER_ACTING",
+        "STYLE",
+        "QUALITY",
+        "POSITIVE_CONSTRAINTS"
+      ],
+      "properties": {
+        "SCENE_CONTEXT": { "type": "string" },
+        "ACTIVE_REFERENCES": { "type": "string" },
+        "LOCATION_MAP": { "type": "string" },
+        "FIRST_FRAME_AND_SPATIAL_BLOCKING": { "type": "string" },
+        "FORMAT_MODE": { "type": "string" },
+        "OPTICS": { "type": "string" },
+        "CAMERA": { "type": "string" },
+        "ACTION_TIMING": { "type": "string" },
+        "PHYSICS": { "type": "string" },
+        "LIGHTING": { "type": "string" },
+        "AUDIO": { "type": "string" },
+        "CHARACTER_ACTING": { "type": "string" },
+        "STYLE": { "type": "string" },
+        "QUALITY": { "type": "string" },
+        "POSITIVE_CONSTRAINTS": { "type": "string" }
+      }
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))(?![A-Za-z]:)(?![\\\\/]).+$"
+    }
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/cinematic/spatial-control-packet.schema.json",
+  "title": "Timed storyboard spatial control packet",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "source_plan", "shot_id", "aspect_ratio", "clean_map_background_color", "frame_range", "coordinate_system", "camera", "entities", "events", "inferred_fields", "assumptions", "failure_conditions", "outputs", "structural_scope_only"],
+  "properties": {
+    "schema_version": { "const": "1.0" },
+    "source_plan": { "$ref": "#/$defs/fileEvidence" },
+    "shot_id": { "type": "string", "minLength": 1 },
+    "aspect_ratio": { "type": "string", "pattern": "^[1-9][0-9]*:[1-9][0-9]*$" },
+    "clean_map_background_color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+    "frame_range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start_frame", "end_frame"],
+      "properties": {
+        "start_frame": { "type": "integer", "minimum": 0 },
+        "end_frame": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "coordinate_system": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["screen_origin", "x_range", "y_range", "depth_range", "depth_meaning"],
+      "properties": {
+        "screen_origin": { "const": "TOP_LEFT" },
+        "x_range": { "const": [0, 1] },
+        "y_range": { "const": [0, 1] },
+        "depth_range": { "const": [0, 1] },
+        "depth_meaning": { "const": "0_NEAREST_CAMERA_1_FARTHEST_PLAYABLE_SPACE" }
+      }
+    },
+    "camera": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["axis_side", "path"],
+      "properties": {
+        "axis_side": { "type": "string", "minLength": 1 },
+        "path": { "type": "array", "items": { "$ref": "#/$defs/point" } }
+      }
+    },
+    "entities": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/entity" } },
+    "events": { "type": "array", "items": { "$ref": "#/$defs/event" } },
+    "inferred_fields": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "assumptions": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "failure_conditions": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true },
+    "outputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["review_map", "clean_map"],
+      "properties": {
+        "review_map": { "$ref": "#/$defs/fileEvidence" },
+        "clean_map": { "$ref": "#/$defs/fileEvidence" }
+      }
+    },
+    "structural_scope_only": { "const": true }
+  },
+  "$defs": {
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?![A-Za-z]:)(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))[^\\\\]+$"
+    },
+    "fileEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "point": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["frame", "x", "y", "depth"],
+      "properties": {
+        "frame": { "type": "integer", "minimum": 0 },
+        "x": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y": { "type": "number", "minimum": 0, "maximum": 1 },
+        "depth": { "type": "number", "minimum": 0, "maximum": 1 },
+        "label": { "type": "string" }
+      }
+    },
+    "state": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["frame", "x", "y", "depth", "body_facing", "head_facing", "gaze_target_id", "pose_or_action_state", "occluded_by_entity_ids"],
+      "properties": {
+        "frame": { "type": "integer", "minimum": 0 },
+        "x": { "type": "number", "minimum": 0, "maximum": 1 },
+        "y": { "type": "number", "minimum": 0, "maximum": 1 },
+        "depth": { "type": "number", "minimum": 0, "maximum": 1 },
+        "label": { "type": "string" },
+        "body_facing": { "type": "string", "minLength": 1 },
+        "head_facing": { "type": "string", "minLength": 1 },
+        "gaze_target_id": { "type": ["string", "null"] },
+        "pose_or_action_state": { "type": "string", "minLength": 1 },
+        "occluded_by_entity_ids": { "type": "array", "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      }
+    },
+    "entity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["entity_id", "role", "color", "states"],
+      "properties": {
+        "entity_id": { "type": "string", "minLength": 1 },
+        "role": { "enum": ["CHARACTER", "PROP", "LANDMARK", "CAMERA"] },
+        "color": { "type": "string", "pattern": "^#[0-9A-Fa-f]{6}$" },
+        "states": { "type": "array", "minItems": 1, "items": { "$ref": "#/$defs/state" } }
+      }
+    },
+    "event": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["event_id", "type", "frame", "participant_entity_ids"],
+      "properties": {
+        "event_id": { "type": "string", "minLength": 1 },
+        "type": { "enum": ["ENTRY", "EXIT", "CONTACT", "HANDOFF", "OCCLUSION", "CROSSING", "REVEAL"] },
+        "frame": { "type": "integer", "minimum": 0 },
+        "participant_entity_ids": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 }, "uniqueItems": true }
+      }
+    }
+  }
+}

@@ -73,11 +73,11 @@ python install.py
 
 ### Media
 
-- [`cinema-studio-pipeline`](skills/cinema-studio-pipeline/README.md): 영화 제작 교육형 파이프라인
+- [`cinema-studio-pipeline`](skills/cinema-studio-pipeline/README.md): 승인·계보·생성·편집을 통제하는 AI 영화 제작 파이프라인
 - [`cinematic-video-pipeline`](skills/cinematic-video-pipeline/README.md): 재현 가능한 영상 생성 파이프라인
 - [`min-edit-seedance-2-0`](skills/min-edit-seedance-2-0/README.md): Seedance 2.0 멀티모달 프롬프트
 - [`sync-cuts-to-music`](skills/sync-cuts-to-music/README.md): 트랜지언트 기반 음악 컷 분석과 편집 패키지
-- [`timed-storyboard`](skills/timed-storyboard/README.md): 초 단위 쇼트·동선·카메라 스토리보드
+- [`timed-storyboard`](skills/timed-storyboard/README.md): 초 단위 쇼트·동선·깊이·공간 제어 스토리보드
 
 ### Education and tooling
 

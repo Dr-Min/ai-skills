@@ -1,0 +1,325 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cinema-studio-pipeline.local/schemas/v2/delivery.schema.json",
+  "$comment": "MANDATORY: review state and approval identity live only in the central approval record. When a central DELIVERY approval with status USER_REVIEW_REQUIRED or USER_APPROVED targets these exact bytes, require the referenced timeline to be centrally USER_APPROVED and PICTURE_LOCKED; bind timeline/export/derivation/QA bytes and hashes; verify media metadata, audio applicability, and distinct FIRST/MIDDLE/LAST evidence; and enforce immutable storage. Version 1 may use 08_delivery/delivery.json; later versions use unique versioned paths and bind the immediately preceding immutable record through supersedes_delivery. The predecessor central approval must be terminal USER_APPROVED or REJECTED and reciprocally linked to the successor without changing that terminal decision. A path is immutable from USER_REVIEW_REQUIRED onward, including rejected candidates.",
+  "title": "Cinema Studio Delivery Authority Record",
+  "description": "Immutable final-export authority separated from the editable picture timeline.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "schema_version",
+    "project_id",
+    "delivery_id",
+    "version",
+    "supersedes_delivery",
+    "source_timeline",
+    "export",
+    "derivation",
+    "qa"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "pattern": "^(?:\\.\\./)*(?:00_schemas|schemas)/delivery\\.schema\\.json$" },
+    "schema_id": { "const": "cinema-studio-pipeline/delivery@2.0.0" },
+    "schema_version": { "const": "2.0.0" },
+    "project_id": { "$ref": "#/$defs/projectId" },
+    "delivery_id": { "$ref": "#/$defs/deliveryId" },
+    "version": { "type": "integer", "minimum": 1 },
+    "supersedes_delivery": {
+      "oneOf": [
+        { "$ref": "#/$defs/deliveryPredecessor" },
+        { "type": "null" }
+      ]
+    },
+    "source_timeline": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["timeline_id", "path", "sha256"],
+      "properties": {
+        "timeline_id": {
+          "oneOf": [{ "$ref": "#/$defs/timelineId" }, { "type": "null" }]
+        },
+        "path": {
+          "oneOf": [{ "$ref": "#/$defs/relativePath" }, { "type": "null" }]
+        },
+        "sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "export": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "media"],
+      "properties": {
+        "path": {
+          "oneOf": [{ "$ref": "#/$defs/relativePath" }, { "type": "null" }]
+        },
+        "sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+        "media": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "media_type",
+            "width",
+            "height",
+            "duration_seconds",
+            "frame_rate_numerator",
+            "frame_rate_denominator",
+            "audio_present",
+            "audio_sample_rate_hz",
+            "audio_channels"
+          ],
+          "properties": {
+            "media_type": { "type": ["string", "null"], "enum": [null, "VIDEO"] },
+            "width": { "type": ["integer", "null"], "minimum": 1 },
+            "height": { "type": ["integer", "null"], "minimum": 1 },
+            "duration_seconds": { "type": ["number", "null"], "exclusiveMinimum": 0 },
+            "frame_rate_numerator": { "type": ["integer", "null"], "minimum": 1 },
+            "frame_rate_denominator": { "type": ["integer", "null"], "minimum": 1 },
+            "audio_present": { "type": "boolean" },
+            "audio_sample_rate_hz": { "type": ["integer", "null"], "minimum": 8000 },
+            "audio_channels": { "type": ["integer", "null"], "minimum": 1 }
+          },
+          "allOf": [
+            {
+              "if": {
+                "properties": { "audio_present": { "const": true } },
+                "required": ["audio_present"]
+              },
+              "then": {
+                "properties": {
+                  "audio_sample_rate_hz": { "type": "integer", "minimum": 8000 },
+                  "audio_channels": { "type": "integer", "minimum": 1 }
+                }
+              }
+            },
+            {
+              "if": {
+                "properties": { "audio_present": { "const": false } },
+                "required": ["audio_present"]
+              },
+              "then": {
+                "properties": {
+                  "audio_sample_rate_hz": { "type": "null" },
+                  "audio_channels": { "type": "null" }
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "derivation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["execution_origin", "tool", "settings", "input_hashes"],
+      "properties": {
+        "execution_origin": { "enum": ["LOCAL_PROCESSING", "REMOTE_PROCESSING"] },
+        "tool": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name", "version", "verified", "verified_at"],
+          "properties": {
+            "name": { "type": ["string", "null"], "minLength": 1 },
+            "version": { "type": ["string", "null"], "minLength": 1 },
+            "verified": { "type": "boolean" },
+            "verified_at": { "type": ["string", "null"], "format": "date-time" }
+          }
+        },
+        "settings": { "type": "object", "additionalProperties": true },
+        "input_hashes": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/hashRecord" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "qa": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "overall_verdict",
+        "media_integrity",
+        "frame_integrity",
+        "audio_sync",
+        "crop_safety",
+        "rights_clearance"
+      ],
+      "properties": {
+        "overall_verdict": { "enum": ["NOT_REVIEWED", "PASS", "FAIL"] },
+        "media_integrity": { "$ref": "#/$defs/qaCheck" },
+        "frame_integrity": { "$ref": "#/$defs/frameIntegrityQaCheck" },
+        "audio_sync": { "$ref": "#/$defs/qaCheck" },
+        "crop_safety": { "$ref": "#/$defs/qaCheck" },
+        "rights_clearance": { "$ref": "#/$defs/qaCheck" }
+      }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "updated_at": { "type": "string", "format": "date-time" },
+    "notes": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "version": { "const": 1 } },
+        "required": ["version"]
+      },
+      "then": {
+        "properties": { "supersedes_delivery": { "type": "null" } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "version": { "minimum": 2 } },
+        "required": ["version"]
+      },
+      "then": {
+        "properties": {
+          "supersedes_delivery": { "$ref": "#/$defs/deliveryPredecessor" }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "projectId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "deliveryId": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$" },
+    "timelineId": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$" },
+    "approvalId": { "type": "string", "pattern": "^APR_[A-Z0-9_]+_[0-9]{3,4}$" },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))(?![A-Za-z]:)(?![\\\\/]).+$"
+    },
+    "hashRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "deliveryPredecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["delivery_id", "version", "path", "sha256", "approval_id"],
+      "properties": {
+        "delivery_id": { "$ref": "#/$defs/deliveryId" },
+        "version": { "type": "integer", "minimum": 1 },
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "approval_id": { "$ref": "#/$defs/approvalId" }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "verified_claim"],
+      "properties": {
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "verified_claim": { "type": "string", "minLength": 1 },
+        "evidence_role": {
+          "enum": ["MEDIA_PROBE", "FIRST_FRAME", "MIDDLE_FRAME", "LAST_FRAME", "AUDIO_SYNC", "CROP_SAFETY", "RIGHTS_CLEARANCE", "OTHER"]
+        },
+        "frame_or_time": { "type": ["string", "null"] }
+      }
+    },
+    "qaCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "evidence", "reason"],
+      "properties": {
+        "status": { "enum": ["NOT_REVIEWED", "PASS", "FAIL", "NOT_APPLICABLE"] },
+        "evidence": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/evidence" },
+          "uniqueItems": true
+        },
+        "reason": { "type": ["string", "null"] }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "status": { "enum": ["PASS", "FAIL"] } }, "required": ["status"] },
+          "then": { "properties": { "evidence": { "minItems": 1 } } }
+        },
+        {
+          "if": { "properties": { "status": { "const": "NOT_APPLICABLE" } }, "required": ["status"] },
+          "then": { "properties": { "reason": { "type": "string", "minLength": 1 } } }
+        }
+      ]
+    },
+    "passedQaCheck": {
+      "allOf": [
+        { "$ref": "#/$defs/qaCheck" },
+        { "properties": { "status": { "enum": ["PASS", "NOT_APPLICABLE"] } } }
+      ]
+    },
+    "passedRequiredQaCheck": {
+      "allOf": [
+        { "$ref": "#/$defs/qaCheck" },
+        { "properties": { "status": { "const": "PASS" } }, "required": ["status"] }
+      ]
+    },
+    "frameEvidence": {
+      "allOf": [
+        { "$ref": "#/$defs/evidence" },
+        {
+          "properties": {
+            "evidence_role": { "enum": ["FIRST_FRAME", "MIDDLE_FRAME", "LAST_FRAME"] },
+            "frame_or_time": { "type": "string", "minLength": 1 }
+          },
+          "required": ["evidence_role", "frame_or_time"]
+        }
+      ]
+    },
+    "frameIntegrityQaCheck": {
+      "allOf": [
+        { "$ref": "#/$defs/qaCheck" },
+        {
+          "properties": {
+            "evidence": {
+              "items": { "$ref": "#/$defs/frameEvidence" }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": { "status": { "const": "PASS" } },
+            "required": ["status"]
+          },
+          "then": {
+            "properties": {
+              "evidence": {
+                "minItems": 3,
+                "maxItems": 3,
+                "allOf": [
+                  {
+                    "contains": { "properties": { "evidence_role": { "const": "FIRST_FRAME" } }, "required": ["evidence_role"] },
+                    "minContains": 1,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": { "properties": { "evidence_role": { "const": "MIDDLE_FRAME" } }, "required": ["evidence_role"] },
+                    "minContains": 1,
+                    "maxContains": 1
+                  },
+                  {
+                    "contains": { "properties": { "evidence_role": { "const": "LAST_FRAME" } }, "required": ["evidence_role"] },
+                    "minContains": 1,
+                    "maxContains": 1
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "passedFrameIntegrityCheck": {
+      "allOf": [
+        { "$ref": "#/$defs/frameIntegrityQaCheck" },
+        { "properties": { "status": { "const": "PASS" } }, "required": ["status"] }
+      ]
+    }
+  }
+}

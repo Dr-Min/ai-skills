@@ -14,23 +14,26 @@ gates; expand the records underneath them.
 
 ## Authoritative production records
 
-Maintain one source of truth for each layer:
+Maintain one source of truth for each layer. Use the v2 schemas and project-relative
+records; Markdown may explain a decision but does not override JSON authority:
 
 - **Story brief** — cause, goal, stakes, obstacle, discovery, choice, and required
   continuity.
-- **Asset registry** — actual `@` tag, type, descriptor, state, source master,
-  approved crop, and stress-test verdict.
-- **Scene map** — geography, landmarks, 180° axis, lighting direction, palette, and
-  active location state.
-- **Scene-block shotlist** — shot number, duration, active references, prompt version,
-  result, change, verdict, and next action.
+- **Project-wide storyboard** — `story_dependency` binds the approved story;
+  `asset_plan` owns every planned production asset; `scenes[].panels` owns geography,
+  action/camera paths, and hashed panel images.
+- **Authoritative shot and coverage plan** — `shot_plan` owns every required shot,
+  panel link, asset need, coverage ID, and minimum approved-take count. Shot/take
+  records execute this inventory and never silently expand it.
+- **Approved asset records** — each planned asset resolves to a versioned `asset.json`
+  with actual `@` tag, descriptor, state, source master, stress-test verdict, and approval.
 - **Constants** — approved descriptors, voice descriptors, and project-specific style
   wrappers. Edit a constant once; do not hand-copy divergent variants.
 
 Split the film into scene blocks in story order. Assign responsibility by block when a
 team is involved, but keep the registries and naming contract shared across the film.
-Memory may help recall decisions; the current registry and shotlist decide what is
-authoritative.
+Memory may help recall decisions; the current project-wide storyboard and authority
+records decide what is authoritative.
 
 ## Asset lock gate
 
@@ -53,17 +56,25 @@ descriptor.
 Lock voices before dialogue production. Store register, tempo, accent, manner, and
 pronunciation as a fixed voice descriptor, then stress-test it across generations.
 
+ASSET_LOCK closes only when every current `asset_plan` item has one matching approved
+record and every extra candidate has a terminal exclusion/replacement status.
+
 ## Scene production loop
 
 For each scene block:
 
 1. Lock assets and descriptors.
 2. Lock the pure geography map and camera-side rule.
-3. Prepare the shot records in story order.
-4. Generate in batches small enough to review while context is fresh.
-5. Assemble usable shots immediately and let the edit request missing wides, inserts,
-   reaction shots, and cutaways.
-6. Change one prompt line per diagnostic iteration and log the result.
+3. For a difficult ensemble, lock the seat/mark/eyeline/depth ledger and derive one
+   clean geometry-only control map from the approved storyboard coordinates.
+4. Prepare shot records in `shot_plan` order, copying exact panel/coverage IDs and the
+   current story/board/look/asset approval snapshot.
+5. Generate in batches small enough to review while context is fresh.
+6. In `ASSEMBLY_WHILE_GENERATING`, assemble approved usable shots and let the edit
+   request missing wides, inserts, reaction shots, and cutaways. In
+   `RAW_SOURCE_FIRST`, keep building the approved source library without creative
+   timeline work.
+7. Change one prompt line per diagnostic iteration and log the result.
 
 Use this minimum iteration record:
 
@@ -73,7 +84,7 @@ prompt_version: [V#]
 changed_line: [one exact change]
 kept_constant: [assets, geography, camera, timing, or other controls]
 result: [observable outcome]
-verdict: [approve / source asset / direction / inconclusive]
+verdict: [PASS / SOURCE_ASSET_FAILURE / DIRECTION_FAILURE / MODEL_FAILURE / INCONCLUSIVE]
 next_action: [one action]
 ```
 
@@ -92,18 +103,21 @@ action, reduce the active space, change the angle, or replace the failing source
   anchor and a framing consequence. Define a visible failure condition.
 - **Static dialogue** — stage it in one constrained corner instead of an entire room.
 
-## Approval gates
+## Gate closure at scale
 
-Require explicit evidence at these gates:
+- STORYBOARD binds its JSON and every panel image through central evidence.
+- ASSET_LOCK resolves every `asset_plan` item with a record whose exact master has a
+  current central `USER_APPROVED` ASSET decision.
+- SHOT_STILL resolves every `shot_plan` item with an approved shot and still evidence.
+- RAW_VIDEO satisfies every `coverage_requirements.minimum_approved_takes`; all other
+  take candidates are `REJECTED`, `SUPERSEDED`, or `EXCLUDED_FROM_INPUTS` explicitly.
+- SOURCE_LIBRARY locks only approved immutable sources; EDIT uses only that library.
+- EDIT content declares `PICTURE_LOCKED` before review; only a central EDIT approval
+  targeting those exact bytes makes it effective. FINISH binds a separate delivery
+  record whose `media_integrity` passes and whose master/QA bytes are evidenced.
 
-- asset master and descriptor locked;
-- state variant selected;
-- location map and axis locked;
-- first-frame occupancy readable;
-- shot prompt version saved;
-- motion result diagnosed;
-- edit inserted into sequence;
-- cleanup, color, and sound complete.
+Every approval record lives in `09_approvals/` and targets the exact current subject
+hash. Use `references/12-invalidation-and-revisions.md` when any authority changes.
 
 Do not claim that a remote project, folder, Element, or generation exists until the
 actual service state is visible and verified.

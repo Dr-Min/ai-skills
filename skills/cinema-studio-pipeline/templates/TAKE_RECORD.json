@@ -1,0 +1,47 @@
+{
+  "$schema": "../schemas/take.schema.json",
+  "schema_id": "cinema-studio-pipeline/take@2.0.0",
+  "schema_version": "2.0.0",
+  "project_id": "new-project",
+  "shot_id": "S01_SH010",
+  "take_id": "S01_SH010_T01",
+  "coverage_requirement_ids": [],
+  "model": {
+    "provider": "REPLACE_WITH_VERIFIED_PROVIDER",
+    "name": "REPLACE_WITH_VERIFIED_MODEL",
+    "version": null,
+    "verified": false,
+    "verified_at": null
+  },
+  "remote_job_id": null,
+  "remote_url": null,
+  "input_hashes": [],
+  "prompt_version": 1,
+  "generation_parameters": {},
+  "execution_origin": "REMOTE_GENERATION",
+  "remote": {
+    "provider": "Higgsfield",
+    "project_id": null,
+    "job_id": null,
+    "verified": false,
+    "verified_at": null,
+    "evidence": []
+  },
+  "output_file": null,
+  "output_sha256": null,
+  "lineage": {
+    "parent_take_id": null,
+    "source_asset_ids": [],
+    "source_take_ids": [],
+    "derivation": "GENERATED"
+  },
+  "diagnosis": {
+    "first_failure": null,
+    "at_seconds": null,
+    "what_held": [],
+    "changed_variable": null,
+    "verdict": "NOT_REVIEWED",
+    "next_action": null
+  },
+  "notes": "INIT_TEMPLATE: substitute this per-take content record; never claim a provider, model, job, file, or hash before verification. Approval state exists only in 09_approvals and source selection only in the SOURCE_LOCKED manifest. Once central USER_REVIEW_REQUIRED hashes this record as evidence, do not mutate it; create a new take_id candidate."
+}

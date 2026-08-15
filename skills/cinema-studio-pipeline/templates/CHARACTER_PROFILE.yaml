@@ -1,0 +1,76 @@
+schema_version: "2.0.0"
+project_id: "{{PROJECT_ID}}"
+asset_id: character_placeholder
+display_name: REPLACE_WITH_CHARACTER_NAME
+
+story_function:
+  goal: TBD
+  obstacle: TBD
+  hidden_pressure: TBD
+  irreversible_choice: TBD
+
+identity:
+  adult_age: null
+  rights_and_consent_verified: false
+  identity_anchors:
+    - TBD
+  silhouette_anchors:
+    - TBD
+  unstable_features_to_stress_test:
+    - hands
+    - profile
+    - full_body_proportions
+
+manner_verbatim: >-
+  REPLACE_WITH_ONE_FIXED_BEHAVIORAL_PARAGRAPH_COPIED_VERBATIM_INTO_RELEVANT_PROMPTS
+
+performance:
+  resting_behavior: TBD
+  gaze_pattern: TBD
+  blink_rate: TBD
+  micro_saccades: TBD
+  hand_business: TBD
+  pressure_response: TBD
+  behavior_to_avoid: TBD
+  micro_event_interval_seconds: "1-2"
+  emotional_tail: TBD
+
+voice:
+  voice_asset_id: null
+  descriptor_version: 1
+  descriptor_sha256: null
+  approved_sample_path: null
+  approved_sample_sha256: null
+  register: TBD
+  tempo: TBD
+  accent_as_physical_conditions: TBD
+  manner: TBD
+  pronunciation_overrides: []
+  descriptor_verbatim: TBD
+
+wardrobe_states:
+  - label: base
+    wardrobe_asset_id: null
+    visible_truth:
+      - TBD
+    mutually_exclusive_with: []
+
+state_assets:
+  - state_label: base
+    asset_id: character_placeholder
+    visible_truth:
+      - TBD
+    mutually_exclusive_with: []
+
+stress_test:
+  required_takes: 10
+  conditions:
+    - close_up_neutral_light
+    - profile
+    - full_body
+    - planned_location_and_light
+    - active_co_star
+  pass_rule: recognizable_in_every_approved_take
+  completed_takes: 0
+  recognizable_takes: 0
+  verdict: NOT_RUN

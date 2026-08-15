@@ -1,0 +1,7 @@
+{
+  "schema_version": "2.0.0",
+  "project_id": "new-project",
+  "generated_from": "04_assets/records",
+  "records": [],
+  "notes": "DERIVED_INDEX: rebuild from per-asset authority records; never edit this instead of an asset record."
+}

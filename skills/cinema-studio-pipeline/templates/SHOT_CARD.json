@@ -1,0 +1,78 @@
+{
+  "$schema": "../schemas/shot.schema.json",
+  "schema_id": "cinema-studio-pipeline/shot@2.0.0",
+  "schema_version": "2.0.0",
+  "project_id": "new-project",
+  "scene_id": "S01",
+  "shot_id": "S01_SH010",
+  "storyboard_panel_ids": ["S01_P010"],
+  "coverage_requirement_ids": [],
+  "dependency_snapshot": null,
+  "story_purpose": "REPLACE_WITH_THE_CAUSAL_STORY_BEAT",
+  "edit_purpose": "REPLACE_WITH_THE_SHOT_FUNCTION_IN_THE_SEQUENCE",
+  "format_mode": "REFERENCE_TEXT_NATIVE",
+  "duration_seconds": 4,
+  "active_assets": [],
+  "still_evidence": [],
+  "motion_reference_asset_ids": [],
+  "spatial": {
+    "location_asset_id": null,
+    "location_map_path": null,
+    "control_packet": null,
+    "screen_direction": "NOT_APPLICABLE",
+    "axis_rule": "TO_BE_DEFINED",
+    "first_frame_occupancy": "TO_BE_DEFINED_BEFORE_GENERATION",
+    "geography_constants": []
+  },
+  "camera": {
+    "shot_size": "MEDIUM",
+    "angle": "EYE_LEVEL",
+    "movement": "LOCKED",
+    "fov_degrees": 47,
+    "composition": "TO_BE_DEFINED"
+  },
+  "action_timing": [],
+  "audio": {
+    "mode": "SFX_ONLY_NO_MUSIC",
+    "dialogue": [],
+    "ambience": [],
+    "sfx": [],
+    "music_event_ids": []
+  },
+  "continuity": {
+    "previous_shot_id": null,
+    "next_shot_id": null,
+    "preserve": [],
+    "state_asset_ids": []
+  },
+  "prompt": {
+    "version": 1,
+    "previous_version": null,
+    "changed_section": null,
+    "exact_text": "",
+    "blocks": {
+      "SCENE_CONTEXT": "",
+      "ACTIVE_REFERENCES": "",
+      "LOCATION_MAP": "",
+      "FIRST_FRAME_AND_SPATIAL_BLOCKING": "",
+      "FORMAT_MODE": "",
+      "OPTICS": "",
+      "CAMERA": "",
+      "ACTION_TIMING": "",
+      "PHYSICS": "",
+      "LIGHTING": "",
+      "AUDIO": "",
+      "CHARACTER_ACTING": "",
+      "STYLE": "",
+      "QUALITY": "",
+      "POSITIVE_CONSTRAINTS": ""
+    },
+    "reference_budget": {
+      "images": 0,
+      "videos": 0,
+      "audio": 0
+    }
+  },
+  "failure_conditions": [],
+  "notes": "INIT_TEMPLATE: bind the exact approved story, project-wide storyboard, lookdev, and required asset records before review. Approval state lives only in 09_approvals. A non-boundary generated review STILL may use asset_id:null; boundary START/END evidence must name the approved boundary asset IDs."
+}

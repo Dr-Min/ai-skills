@@ -1,99 +1,93 @@
 # 02 — Image prompt construction
 
-Covers: the six-slot decision pass, the iteration rule, and the **Leera** location
-prompt-optimization method for image generation.
+Build image prompts from approved production decisions. Do not paste a generic
+“cinematic” persona or repeat a fixed composition across scenes.
 
-## Scope guard
+## Scope
 
-Use the one-paragraph output in this file for location plates, character images, prop
-images, and image edits. For a Seedance video prompt, read
-`references/09-seedance-prompt-director.md` instead. A video shot needs explicit
-geography, first-frame blocking, time, physics, acting, and audio sections; adding a
-camera-motion phrase to an image paragraph is not enough.
+Use this reference for location plates, character images, props, concept stills, and
+fresh image patches. For video, read `references/09-seedance-prompt-director.md`.
 
-## Six decisions, then one prompt
+The prompt is a render of the current authority records. It does not outrank the story,
+visual bible, asset state, shot card, reference-role contract, or actual model settings.
 
-There is no universal sentence formula. There is a reliable **decision pass**:
-separate the rough idea into six slots, resolve each, then assemble the answers into
-one paragraph.
+## Six decisions before prose
 
-1. **Subject** — who/what the shot is about.
-2. **Action** — what they're doing (block it).
-3. **Setting** — the world around them (make it drawable).
-4. **Light** — one coherent logic: direction, source, falloff.
-5. **Camera / composition** — framing, angle, distance, and depth.
-6. **Constraints** — what to prevent (known failures, continuity).
+Resolve these slots before writing the final one-paragraph prompt:
 
-A rough thought often *hints* at a slot without resolving it — "hot summer day" says
-nothing about light direction or shadow shape. The final paragraph is not better
-because it's longer; each clause now has a **job**: identify the subject, block the
-action, make the setting drawable, make the light coherent, direct the frame/motion, or
-prevent a known failure.
+1. **Subject** — the visual center and its approved identity or state.
+2. **Action** — the drawable pose, gesture, or event at this exact instant.
+3. **Setting** — scene-specific geography, surfaces, depth layers, and anchor objects.
+4. **Light** — motivated source, direction, falloff, contrast, and color relationship.
+5. **Camera** — framing, height, angle, lens intent, focus, and composition.
+6. **Constraints** — continuity truths and failures this generation must avoid.
 
-**Director's check:** if Claude adds an unchosen prop, style, weather condition, or
-camera move, ask what ambiguity it resolves — then approve it, replace it, or remove
-it. Every creative addition traces back to a decision you can see.
+Add a seventh check before assembly: **why this frame exists in the film**. If another
+location, lens, or light treatment would communicate the same beat equally well, the
+mise-en-scene is not specific enough yet.
 
-**Iteration works the same way.** Change one decision — "move the house to the right
-third, keep the sun out of frame, make it sunset" — and rewrite the **full** prompt so
-every slot still agrees. Never a diff, never a fragment.
+Every clause in the final prompt must trace to a visible decision. Concrete nouns and
+spatial relationships are stronger than praise words such as “beautiful,” “epic,” or
+“cinematic.” A longer prompt is not automatically more controlled.
 
-## Leera — the location prompt method
+## Location decision pass
 
-Leera packages the same visible decision pass for **locations** as a 4-D method:
-**Deconstruct → Diagnose → Develop → Deliver** (with a decision log). Paste it into a
-fresh Claude chat, or save it as `Leera.md` / a `SKILL.md`, then feed it a rough
-location thought. Always **approve the decision log before using the prompt** — that
-keeps Claude in the assembly role and you in the director's chair.
+For a new location, run four passes without turning them into a reusable persona:
 
+1. **Deconstruct** — map the brief into the six slots and label each value explicit,
+   implied, or missing.
+2. **Diagnose** — check spatial logic, story function, repeated imagery, light
+   motivation, and whether characters can perform the planned blocking.
+3. **Develop** — propose only the smallest missing decisions, with their visual reason.
+4. **Deliver** — write one coherent English prompt plus a decision log and open issues.
+
+There is no universal 3/4-view, soft-light, shallow-focus, neon, fog, or teal-orange
+default. Choose the camera and light from the beat, geography, and approved visual
+bible. Repeating a tasteful default across scenes is one of the fastest ways to create
+AI-slop sameness.
+
+When a location must support later compositing or character placement, name stable
+spatial anchors and keep the required negative space. Do not add observatory equipment,
+architecture, weather, props, or background figures simply because they seem genre
+appropriate.
+
+## Character and asset prompts
+
+- Reuse the exact approved identity and state descriptor; do not paraphrase it casually.
+- Separate identity, wardrobe, pose, location, and look references by role.
+- Match the requested crop. A face-approved close-up is not proof of full-body anatomy.
+- For a new full-body source, generate from approved identity evidence rather than
+  repeatedly editing an already degraded composite.
+- Keep mutually exclusive states in separate records and separate generations.
+
+## Image edits and fresh patches
+
+Preserve the immutable source. Describe one region and one intended change, generate a
+fresh patch from the source-quality input, and composite it as a derivative. Never make
+the derivative the new identity master. If identity, anatomy, or overall image quality
+degrades, stop patching and generate a fresh source.
+
+## Iteration rule
+
+Change one diagnostic variable per iteration. Rewrite the full prompt so its clauses
+remain coherent, but record the exact changed slot and expected visible effect. Keep all
+other model and UI settings fixed unless that single setting is the experiment.
+
+Do not “improve everything” after a failed render. First name the earliest visible
+failure: identity, state, geography, blocking, camera, light, anatomy, texture, or model
+capability. Patch that authority layer.
+
+## Required output before generation
+
+```text
+Prompt: <one coherent English paragraph>
+Decision log: <brief source decision -> prompt clause mapping>
+Active references: <asset id, exact hash, role, state>
+Model/UI settings: <recorded outside the prompt>
+Changed variable: <one field, or NONE for v01>
+Expected visible proof: <what must be visible in the result>
+Open issue: <only a material unresolved decision>
 ```
-Leera.md
-In this chat we build location prompts for a Higgsfield project.
 
-You are Leera, a master-level prompt-optimization expert. Your mission: turn any rough,
-half-formed input into a precise, production-ready location prompt for cinematic image
-models. Run the 4-D method on every brief:
-
-1. DECONSTRUCT — quote the useful words from my brief and map them into six slots:
-subject, action, setting, light, camera/framing, and constraints. Mark each slot as
-explicit, implied, or missing.
-
-2. DIAGNOSE — audit for clarity gaps and ambiguity. Check that the location makes
-logical sense: one sun, believable doors and windows, shadows falling away from the
-stated light sources. For every gap, either ask me or label the default you propose.
-Never silently add weather, props, style, or camera movement.
-
-3. DEVELOP — build the prompt from approved decisions: one clear subject and action,
-the setting around them, a named anchor object (a sofa, a doorway, a banner) for later
-character placement, explicit light (soft sources for interiors — hard visible rays
-usually slop), a tonal palette with smooth falloff and no crushed shadows, and camera
-angle (use a declared 3/4-view default for depth when I give no angle). Finish with
-constraints that protect continuity. Concrete nouns over
-quality words — "weathered wood siding", never "beautiful".
-
-4. DELIVER — output the optimized prompt as one paragraph in English, then a decision
-log. For every added or rephrased detail, name the ambiguity or failure it resolves.
-
-Operating modes:
-DETAIL (default for a new location) — ask 2-3 clarifying questions before optimizing,
-then do a deep pass.
-BASIC (quick fix) — skip the questions, use only the minimum clearly labelled defaults,
-and deliver immediately.
-
-Iteration rule: when I reply with changes ("move the house to the right third, sun out
-of frame, make it sunset"), rewrite the FULL prompt with the change applied — never a
-diff, never a fragment.
-
-Response format:
-Your optimized prompt: [the prompt]
-Decision log: [source phrase or declared default → prompt decision → what it resolves]
-Open questions: [only if something essential is still missing]
-```
-
-Notes on Leera's built-in defaults (know *why*, so you can override deliberately):
-- **3/4 view default** — exposes side geometry and depth for later character placement.
-  Catch her when a brief pushes her toward dead-frontal, and ask explicitly for it with
-  a persona that doesn't default to it.
-- **Soft interior light** — hard visible rays usually slop.
-- **Named anchor object** — a fixed thing to attach later blocking to.
-- **Concrete nouns over quality words** — "weathered wood siding", never "beautiful".
+After generation, inspect the pixels at the intended crop. A clean job response or a
+well-formed prompt is not visual proof.

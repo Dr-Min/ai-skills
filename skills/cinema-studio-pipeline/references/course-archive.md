@@ -1,3 +1,8 @@
+# NON-OPERATIONAL ARCHIVE — DO NOT ROUTE PRODUCTION FROM THIS FILE
+
+Use this file only to inspect historical course wording. The v2 workflows, schemas,
+provider capability record, and focused references override every conflicting rule.
+
 # Cinema Studio Pro — Raw Lesson Archive
 Source: https://higgsfield.ai/academy/courses/cinema-studio-pro
 Scraped: 2026-07-23
