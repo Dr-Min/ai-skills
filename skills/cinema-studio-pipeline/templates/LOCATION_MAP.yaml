@@ -1,0 +1,80 @@
+schema_version: "2.0.0"
+project_id: "{{PROJECT_ID}}"
+map_id: location_placeholder_map_base
+location_asset_id: location_placeholder
+state_label: base
+
+classification:
+  interior_exterior: INT
+  time_of_day: NIGHT
+  weather: clear
+  era_rule: TBD
+  dialogue_location: false
+
+geometry:
+  origin: camera_master_position
+  units: meters
+  dimensions:
+    width: 0
+    depth: 0
+    height: 0
+  landmarks:
+    - landmark_id: anchor_a
+      description: TBD
+      x: 0
+      y: 0
+      z: 0
+  zones:
+    - zone_id: zone_a
+      purpose: TBD
+      bounds: TBD
+  thresholds: []
+
+blocking:
+  master_camera_position: TBD
+  screen_direction: NOT_APPLICABLE
+  one_eighty_axis:
+    point_a: TBD
+    point_b: TBD
+    allowed_camera_side: TBD
+  subject_marks: []
+  foreground_occluders: []
+  dialogue_continuity:
+    seat_or_standing_marks: []
+    eyeline_pairs: []
+    screen_side_owners: []
+    foreground_midground_background_order: []
+    allowed_repositions: []
+
+lighting:
+  motivated_key: TBD
+  direction_vector: TBD
+  practical_sources: []
+  forbidden_sources: []
+  atmosphere: TBD
+
+palette:
+  base_80_85_percent: TBD
+  accents_10_15_percent: TBD
+  counter_note_5_percent: TBD
+  motivated_accent_objects: []
+
+reference_kit:
+  master_three_quarter: null
+  front: null
+  reverse: null
+  character_background_plates: []
+  empty_walkthrough_video: null
+  optical_carrier_plate: null
+
+state_isolation:
+  mutually_exclusive_location_asset_ids: []
+  visible_truth:
+    - TBD
+
+gate:
+  people_or_weapons_absent_from_pure_plate: false
+  anchor_objects_readable: false
+  one_light_logic: false
+  materials_physically_credible: false
+  axis_locked: false

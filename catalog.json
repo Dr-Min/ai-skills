@@ -135,8 +135,8 @@
       "category": "media",
       "path": "skills/cinema-studio-pipeline",
       "documentation": "skills/cinema-studio-pipeline/README.md",
-      "summary": "영화 제작 학습과 프리프로덕션을 단계별로 안내하는 파이프라인",
-      "requires": []
+      "summary": "승인·해시·계보·다인물 연기·생성·편집·납품을 단계별로 통제하는 AI 영화 제작 파이프라인",
+      "requires": ["python", "jsonschema", "Pillow", "ffmpeg"]
     },
     {
       "name": "cinematic-video-pipeline",
@@ -167,8 +167,8 @@
       "category": "media",
       "path": "skills/timed-storyboard",
       "documentation": "skills/timed-storyboard/README.md",
-      "summary": "이야기를 초 단위 쇼트와 동선이 있는 시네마틱 스토리보드로 변환",
-      "requires": ["python"]
+      "summary": "이야기를 초 단위 쇼트·동선·깊이와 검증 가능한 공간 제어 패킷으로 변환",
+      "requires": ["python", "jsonschema", "Pillow"]
     },
     {
       "name": "skill-builder-101",

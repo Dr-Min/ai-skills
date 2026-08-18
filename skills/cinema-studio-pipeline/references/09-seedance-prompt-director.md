@@ -40,19 +40,21 @@ reference copied as composition instead of geography.
 Use only the sections the shot needs, in this order:
 
 ```text
-SCENE CONTEXT
-ACTIVE REFERENCES
-GEO SPATIAL LAYOUT
-FIRST FRAME AND SPATIAL BLOCKING
-FORMAT MODE
+SCENE_CONTEXT
+ACTIVE_REFERENCES
+LOCATION_MAP
+FIRST_FRAME_AND_SPATIAL_BLOCKING
+FORMAT_MODE
 OPTICS
 CAMERA
-ACTION TIMING
+ACTION_TIMING
 PHYSICS
 LIGHTING
 AUDIO
-CHARACTER ACTING
-POSITIVE CONSTRAINTS
+CHARACTER_ACTING
+STYLE
+QUALITY
+POSITIVE_CONSTRAINTS
 ```
 
 Write the final prompt in clear cinematic English unless the user requests another
@@ -96,7 +98,7 @@ explicitly requires it and it is safe and story-critical.
 Write one pure scene map and repeat it unchanged across the scene:
 
 ```text
-GEO SPATIAL LAYOUT (locked across this scene)
+LOCATION_MAP (locked across this scene)
 - [LANDMARK]: [frame position and world relationship]
 - [LANDMARK]: [distance from the first landmark]
 - 180° AXIS: camera stays on [named side] and never crosses the line.
@@ -156,6 +158,13 @@ voice descriptor, and state that other characters remain silent when necessary. 
 ambience below dialogue and forbid subtitles or music only when those are likely
 failure modes or part of the deliverable contract. Read
 `references/10-acting-and-dialogue.md` whenever performance matters.
+
+### Style and quality
+
+Keep `STYLE` compact and subordinate to identity, geography, action, physics, and
+light. State observable texture, contrast, grain, and color behavior instead of a long
+list of artist or film names. Use `QUALITY` only for visible stability and clarity
+requirements that are not already authoritative UI settings.
 
 ### Constraints and UI settings
 

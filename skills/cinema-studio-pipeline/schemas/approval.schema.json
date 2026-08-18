@@ -1,0 +1,246 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cinema-studio-pipeline.local/schemas/v2/approval.schema.json",
+  "$comment": "MANDATORY: INTERNAL_REVIEW, USER_REVIEW_REQUIRED, USER_APPROVED, REJECTED, SUPERSEDED, and EXCLUDED_FROM_INPUTS must bind subject_sha256 to exact authority bytes and hashed evidence. Only DRAFT and LEGACY_UNVERIFIED may leave subject/evidence hashes null. The semantic validator must reject stale or mismatched targets and treat this central record as the sole approval-state authority.",
+  "title": "Cinema Studio Approval Authority Record",
+  "description": "Explicit evidence-backed decision for a production gate or artifact.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "schema_version",
+    "project_id",
+    "approval_id",
+    "subject_type",
+    "subject_id",
+    "subject_sha256",
+    "gate",
+    "review_status",
+    "evidence",
+    "supersedes_approval_id",
+    "superseded_by_approval_id"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "pattern": "^(?:\\.\\./)*(?:00_schemas|schemas)/approval\\.schema\\.json$" },
+    "schema_id": { "const": "cinema-studio-pipeline/approval@2.0.0" },
+    "schema_version": { "const": "2.0.0" },
+    "project_id": { "$ref": "#/$defs/projectId" },
+    "approval_id": { "$ref": "#/$defs/approvalId" },
+    "subject_type": {
+      "enum": [
+        "STORY",
+        "STORYBOARD",
+        "LOOKDEV",
+        "ASSET",
+        "SHOT_STILL",
+        "TAKE",
+        "SOURCE_LIBRARY",
+        "TIMELINE",
+        "DELIVERY"
+      ]
+    },
+    "subject_id": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "subject_sha256": {
+      "type": ["string", "null"],
+      "pattern": "^[a-f0-9]{64}$",
+      "description": "Hash of the exact artifact receiving this decision. A validator must require at least one USER_APPROVED evidence item to repeat this hash."
+    },
+    "gate": {
+      "enum": [
+        "STORY",
+        "STORYBOARD",
+        "LOOKDEV",
+        "ASSET_LOCK",
+        "SHOT_STILL",
+        "RAW_VIDEO",
+        "SOURCE_LIBRARY",
+        "EDIT",
+        "FINISH"
+      ]
+    },
+    "review_status": { "$ref": "#/$defs/reviewStatus" },
+    "requested_by": { "type": "string", "minLength": 1 },
+    "requested_at": { "type": "string", "format": "date-time" },
+    "decided_by": { "type": "string", "minLength": 1 },
+    "decided_by_type": { "enum": ["USER", "INTERNAL", "SYSTEM"] },
+    "decided_at": { "type": "string", "format": "date-time" },
+    "user_evidence_reference": { "type": "string", "minLength": 1 },
+    "decision_notes": { "type": "string" },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["path", "sha256", "verified_claim"],
+        "properties": {
+          "path": { "$ref": "#/$defs/relativePath" },
+          "sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+          "verified_claim": { "type": "string", "minLength": 1 },
+          "frame_or_time": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "supersedes_approval_id": {
+      "oneOf": [{ "$ref": "#/$defs/approvalId" }, { "type": "null" }]
+    },
+    "superseded_by_approval_id": {
+      "oneOf": [{ "$ref": "#/$defs/approvalId" }, { "type": "null" }]
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "subject_type": { "const": "STORY" } }, "required": ["subject_type"] },
+      "then": { "properties": { "gate": { "const": "STORY" } } }
+    },
+    {
+      "if": { "properties": { "subject_type": { "const": "STORYBOARD" } }, "required": ["subject_type"] },
+      "then": { "properties": { "gate": { "const": "STORYBOARD" } } }
+    },
+    {
+      "if": { "properties": { "subject_type": { "const": "LOOKDEV" } }, "required": ["subject_type"] },
+      "then": { "properties": { "gate": { "const": "LOOKDEV" } } }
+    },
+    {
+      "if": { "properties": { "subject_type": { "const": "ASSET" } }, "required": ["subject_type"] },
+      "then": { "properties": { "gate": { "const": "ASSET_LOCK" } } }
+    },
+    {
+      "if": { "properties": { "subject_type": { "const": "SHOT_STILL" } }, "required": ["subject_type"] },
+      "then": { "properties": { "gate": { "const": "SHOT_STILL" } } }
+    },
+    {
+      "if": { "properties": { "subject_type": { "const": "TAKE" } }, "required": ["subject_type"] },
+      "then": { "properties": { "gate": { "const": "RAW_VIDEO" } } }
+    },
+    {
+      "if": { "properties": { "subject_type": { "const": "SOURCE_LIBRARY" } }, "required": ["subject_type"] },
+      "then": { "properties": { "gate": { "const": "SOURCE_LIBRARY" } } }
+    },
+    {
+      "if": { "properties": { "subject_type": { "const": "TIMELINE" } }, "required": ["subject_type"] },
+      "then": { "properties": { "gate": { "const": "EDIT" } } }
+    },
+    {
+      "if": { "properties": { "subject_type": { "const": "DELIVERY" } }, "required": ["subject_type"] },
+      "then": { "properties": { "gate": { "const": "FINISH" } } }
+    },
+    {
+      "if": {
+        "properties": {
+          "review_status": {
+            "not": { "enum": ["DRAFT", "LEGACY_UNVERIFIED"] }
+          }
+        },
+        "required": ["review_status"]
+      },
+      "then": {
+        "properties": {
+          "subject_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "evidence": {
+            "minItems": 1,
+            "items": {
+              "properties": {
+                "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "review_status": { "const": "USER_REVIEW_REQUIRED" } },
+        "required": ["review_status"]
+      },
+      "then": {
+        "required": ["requested_by", "requested_at"],
+        "properties": {
+          "subject_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "evidence": {
+            "minItems": 1,
+            "items": {
+              "properties": {
+                "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "review_status": { "enum": ["USER_APPROVED", "REJECTED", "SUPERSEDED", "EXCLUDED_FROM_INPUTS"] }
+        },
+        "required": ["review_status"]
+      },
+      "then": { "required": ["decided_by_type", "decided_by", "decided_at"] }
+    },
+    {
+      "if": {
+        "properties": { "review_status": { "const": "USER_APPROVED" } },
+        "required": ["review_status"]
+      },
+      "then": {
+        "required": ["decided_by_type", "decided_by", "decided_at", "user_evidence_reference"],
+        "properties": {
+          "decided_by_type": { "const": "USER" },
+          "subject_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+          "evidence": {
+            "minItems": 1,
+            "items": {
+              "properties": {
+                "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "review_status": { "const": "REJECTED" } },
+        "required": ["review_status"]
+      },
+      "then": {
+        "required": ["decision_notes"],
+        "properties": { "decision_notes": { "minLength": 1 } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "review_status": { "const": "EXCLUDED_FROM_INPUTS" } },
+        "required": ["review_status"]
+      },
+      "then": {
+        "required": ["decision_notes"],
+        "properties": { "decision_notes": { "minLength": 1 } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "review_status": { "const": "SUPERSEDED" } },
+        "required": ["review_status"]
+      },
+      "then": {
+        "properties": { "superseded_by_approval_id": { "$ref": "#/$defs/approvalId" } }
+      }
+    }
+  ],
+  "$defs": {
+    "projectId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "approvalId": { "type": "string", "pattern": "^APR_[A-Z0-9_]+_[0-9]{3,4}$" },
+    "reviewStatus": {
+      "enum": ["DRAFT", "INTERNAL_REVIEW", "USER_REVIEW_REQUIRED", "USER_APPROVED", "REJECTED", "SUPERSEDED", "EXCLUDED_FROM_INPUTS", "LEGACY_UNVERIFIED"]
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))(?![A-Za-z]:)(?![\\\\/]).+$"
+    }
+  }
+}

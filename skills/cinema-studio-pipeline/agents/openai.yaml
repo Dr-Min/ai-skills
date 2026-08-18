@@ -1,4 +1,7 @@
 interface:
-  display_name: "Cinema Studio Pipeline"
-  short_description: "Higgsfield 영화 제작과 Seedance 연출 파이프라인"
-  default_prompt: "Use $cinema-studio-pipeline to turn my scene into approved assets and a production-ready Seedance shot."
+  display_name: "Cinema Studio Pipeline v2"
+  short_description: "승인·JSON·원본 계보 기반 AI 영화 제작 파이프라인"
+  default_prompt: "Use $cinema-studio-pipeline to build my film one approved gate at a time and preserve every source, setting, and decision in validated project records."
+
+policy:
+  allow_implicit_invocation: true

@@ -1,0 +1,15 @@
+{
+  "$schema": "../schemas/approval.schema.json",
+  "schema_id": "cinema-studio-pipeline/approval@2.0.0",
+  "schema_version": "2.0.0",
+  "project_id": "new-project",
+  "approval_id": "APR_STORY_0001",
+  "subject_type": "STORY",
+  "subject_id": "story-contract",
+  "subject_sha256": null,
+  "gate": "STORY",
+  "review_status": "DRAFT",
+  "evidence": [],
+  "supersedes_approval_id": null,
+  "superseded_by_approval_id": null
+}

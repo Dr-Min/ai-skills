@@ -1,0 +1,14 @@
+{
+  "$schema": "../schemas/storyboard.schema.json",
+  "schema_id": "cinema-studio-pipeline/storyboard@2.0.0",
+  "schema_version": "2.0.0",
+  "project_id": "new-project",
+  "storyboard_id": "project_storyboard",
+  "version": 1,
+  "rough_level": 1,
+  "story_dependency": null,
+  "asset_plan": [],
+  "scenes": [],
+  "shot_plan": [],
+  "notes": "Draft project-wide inventory: bind the current approved story, then add planned assets, scenes, hashed panel images, shots, and coverage. Approval state lives only in 09_approvals; do not add fake hashes or approvals."
+}

@@ -1,0 +1,10 @@
+{
+  "$schema": "../schemas/source-library.schema.json",
+  "schema_id": "cinema-studio-pipeline/source-library@2.0.0",
+  "schema_version": "2.0.0",
+  "project_id": "new-project",
+  "library_id": "approved_sources",
+  "lock_status": "UNLOCKED",
+  "sources": [],
+  "notes": "Only USER_APPROVED take records with matching SHA-256 may enter this manifest. Set SOURCE_LOCKED before review; central approval state lives only in 09_approvals."
+}

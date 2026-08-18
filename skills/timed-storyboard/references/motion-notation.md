@@ -6,6 +6,7 @@
 - Treat `start_frame` as inclusive and `end_frame` as exclusive.
 - Convert for display with `seconds = frame / fps`.
 - Use normalized screen coordinates: top-left `(0, 0)`, bottom-right `(1, 1)`.
+- When depth matters, use normalized camera-relative depth: `0` is nearest the camera and `1` is farthest within the planned playable space. This is ordering guidance, not measured world geometry.
 - Record approximate user ranges separately as hints. Never overwrite the hint with the proposed timing.
 
 ## Line legend
@@ -50,6 +51,7 @@ For each visible character, record:
 - entry/exit edge and exact frame;
 - contact, pickup, release, collision, fall, or occlusion event;
 - relationship distance to other characters.
+- depth order and planned occlusion relative to other characters or landmarks.
 
 For a moving subject, use at least two waypoints. Add a middle waypoint for a curve, speed change, obstacle, or important staging mark. Declare `stationary: true` when no travel occurs.
 

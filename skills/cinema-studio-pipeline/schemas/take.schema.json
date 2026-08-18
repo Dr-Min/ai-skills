@@ -1,0 +1,248 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cinema-studio-pipeline.local/schemas/v2/take.schema.json",
+  "$comment": "MANDATORY: review state, approval identity, and source-library selection live outside this record. When a central TAKE approval with status USER_REVIEW_REQUIRED or USER_APPROVED targets the exact output bytes, the semantic validator must require nonempty coverage_requirement_ids, output path/hash, input hashes, a verified model, PASS diagnosis, origin-specific remote or local provenance, exact shot/storyboard coverage resolution, and this take.json as hashed evidence. The take.json evidence record and output media are immutable from USER_REVIEW_REQUIRED onward; a changed candidate requires a new take_id. Source selection is represented only by membership in a centrally approved SOURCE_LOCKED source manifest.",
+  "title": "Cinema Studio Take Content Record",
+  "description": "One immutable take candidate's generation settings, lineage, output, coverage, provenance, and diagnosis.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "schema_version",
+    "project_id",
+    "shot_id",
+    "take_id",
+    "coverage_requirement_ids",
+    "model",
+    "remote_job_id",
+    "input_hashes",
+    "prompt_version",
+    "generation_parameters",
+    "execution_origin",
+    "remote",
+    "output_file",
+    "output_sha256",
+    "lineage",
+    "diagnosis"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "pattern": "^(?:\\.\\./)*(?:00_schemas|schemas)/take\\.schema\\.json$" },
+    "schema_id": { "const": "cinema-studio-pipeline/take@2.0.0" },
+    "schema_version": { "const": "2.0.0" },
+    "project_id": { "$ref": "#/$defs/projectId" },
+    "shot_id": { "$ref": "#/$defs/shotId" },
+    "take_id": { "$ref": "#/$defs/takeId" },
+    "coverage_requirement_ids": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/coverageId" },
+      "uniqueItems": true
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "name", "version", "verified", "verified_at"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "name": { "type": "string", "minLength": 1 },
+        "version": { "type": ["string", "null"] },
+        "verified": { "type": "boolean" },
+        "verified_at": { "type": ["string", "null"], "format": "date-time" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "verified": { "const": true } }, "required": ["verified"] },
+          "then": { "properties": { "verified_at": { "type": "string", "format": "date-time" } } }
+        }
+      ]
+    },
+    "remote_job_id": { "type": ["string", "null"] },
+    "remote_url": { "type": ["string", "null"], "format": "uri" },
+    "input_hashes": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/hashRecord" },
+      "uniqueItems": true
+    },
+    "prompt_version": { "type": "integer", "minimum": 1 },
+    "generation_parameters": {
+      "type": "object",
+      "description": "Exact provider parameters as observed at generation time.",
+      "additionalProperties": true
+    },
+    "execution_origin": { "enum": ["REMOTE_GENERATION", "LOCAL_PROCESSING"] },
+    "remote": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["provider", "project_id", "job_id", "verified", "verified_at", "evidence"],
+      "properties": {
+        "provider": { "type": "string", "minLength": 1 },
+        "project_id": { "type": ["string", "null"] },
+        "job_id": { "type": ["string", "null"] },
+        "verified": { "type": "boolean" },
+        "verified_at": { "type": ["string", "null"], "format": "date-time" },
+        "evidence": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/remoteEvidence" }
+        }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "verified": { "const": true } }, "required": ["verified"] },
+          "then": {
+            "properties": {
+              "project_id": { "type": "string", "minLength": 1 },
+              "job_id": { "type": "string", "minLength": 1 },
+              "verified_at": { "type": "string", "format": "date-time" },
+              "evidence": { "minItems": 1 }
+            }
+          }
+        }
+      ]
+    },
+    "output_file": {
+      "oneOf": [{ "$ref": "#/$defs/relativePath" }, { "type": "null" }]
+    },
+    "output_sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+    "lineage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["parent_take_id", "source_asset_ids", "source_take_ids", "derivation"],
+      "properties": {
+        "parent_take_id": {
+          "oneOf": [{ "$ref": "#/$defs/takeId" }, { "type": "null" }]
+        },
+        "source_asset_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/assetId" },
+          "uniqueItems": true
+        },
+        "source_take_ids": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/takeId" },
+          "uniqueItems": true
+        },
+        "derivation": {
+          "enum": ["GENERATED", "REGENERATION", "UPSCALE", "INTERPOLATION", "TRANSCODE", "COMPOSITE", "RETOUCH"]
+        }
+      }
+    },
+    "diagnosis": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["first_failure", "at_seconds", "what_held", "changed_variable", "verdict"],
+      "properties": {
+        "first_failure": { "type": ["string", "null"] },
+        "at_seconds": { "type": ["number", "null"], "minimum": 0 },
+        "what_held": {
+          "type": "array",
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        },
+        "changed_variable": { "type": ["string", "null"] },
+        "verdict": {
+          "enum": ["PASS", "SOURCE_ASSET_FAILURE", "DIRECTION_FAILURE", "MODEL_FAILURE", "INCONCLUSIVE", "NOT_REVIEWED"]
+        },
+        "next_action": { "type": ["string", "null"] }
+      }
+    },
+    "created_at": { "type": "string", "format": "date-time" },
+    "notes": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "execution_origin": { "const": "LOCAL_PROCESSING" } },
+        "required": ["execution_origin"]
+      },
+      "then": {
+        "properties": {
+          "remote_job_id": { "type": "null" },
+          "remote_url": { "type": "null" },
+          "remote": {
+            "properties": {
+              "project_id": { "type": "null" },
+              "job_id": { "type": "null" },
+              "verified": { "const": false },
+              "verified_at": { "type": "null" },
+              "evidence": { "maxItems": 0 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lineage": {
+            "properties": { "derivation": { "enum": ["REGENERATION", "UPSCALE", "INTERPOLATION", "TRANSCODE", "RETOUCH"] } },
+            "required": ["derivation"]
+          }
+        },
+        "required": ["lineage"]
+      },
+      "then": {
+        "properties": {
+          "input_hashes": { "minItems": 1 },
+          "lineage": {
+            "properties": {
+              "parent_take_id": { "$ref": "#/$defs/takeId" },
+              "source_take_ids": { "minItems": 1 }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "lineage": {
+            "properties": { "derivation": { "const": "COMPOSITE" } },
+            "required": ["derivation"]
+          }
+        },
+        "required": ["lineage"]
+      },
+      "then": {
+        "properties": {
+          "input_hashes": { "minItems": 1 },
+          "lineage": {
+            "anyOf": [
+              { "properties": { "source_take_ids": { "minItems": 1 } } },
+              { "properties": { "source_asset_ids": { "minItems": 1 } } }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "projectId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "shotId": { "type": "string", "pattern": "^S[0-9]{2,4}_SH[0-9]{3,4}$" },
+    "takeId": { "type": "string", "pattern": "^S[0-9]{2,4}_SH[0-9]{3,4}_T[0-9]{2,3}$" },
+    "coverageId": { "type": "string", "pattern": "^COV_[A-Z0-9]+(?:_[A-Z0-9]+)*$" },
+    "assetId": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$" },
+    "hashRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256"],
+      "properties": {
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" }
+      }
+    },
+    "remoteEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "sha256", "verified_claim"],
+      "properties": {
+        "path": { "$ref": "#/$defs/relativePath" },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "verified_claim": { "type": "string", "minLength": 1 }
+      }
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))(?![A-Za-z]:)(?![\\\\/]).+$"
+    }
+  }
+}

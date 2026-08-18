@@ -1,0 +1,60 @@
+{
+  "schema_version": "1.0",
+  "source_plan": {
+    "path": "storyboard_plan.json",
+    "sha256": "REPLACE_WITH_64_HEX_SHA256"
+  },
+  "shot_id": "S001",
+  "aspect_ratio": "16:9",
+  "clean_map_background_color": "#000000",
+  "frame_range": {
+    "start_frame": 0,
+    "end_frame": 96
+  },
+  "coordinate_system": {
+    "screen_origin": "TOP_LEFT",
+    "x_range": [0, 1],
+    "y_range": [0, 1],
+    "depth_range": [0, 1],
+    "depth_meaning": "0_NEAREST_CAMERA_1_FARTHEST_PLAYABLE_SPACE"
+  },
+  "camera": {
+    "axis_side": "REPLACE_WITH_APPROVED_CAMERA_SIDE",
+    "path": []
+  },
+  "entities": [
+    {
+      "entity_id": "REPLACE_WITH_ENTITY_ID",
+      "role": "CHARACTER",
+      "color": "#6B8E9E",
+      "states": [
+        {
+          "frame": 0,
+          "x": 0.25,
+          "y": 0.6,
+          "depth": 0.4,
+          "body_facing": "REPLACE_WITH_BODY_DIRECTION",
+          "head_facing": "REPLACE_WITH_HEAD_DIRECTION",
+          "gaze_target_id": null,
+          "pose_or_action_state": "REPLACE_WITH_VISIBLE_STATE",
+          "occluded_by_entity_ids": []
+        }
+      ]
+    }
+  ],
+  "events": [],
+  "inferred_fields": [],
+  "assumptions": [],
+  "failure_conditions": [],
+  "outputs": {
+    "review_map": {
+      "path": "control-maps/review/S001-spatial-review.png",
+      "sha256": "REPLACE_WITH_64_HEX_SHA256"
+    },
+    "clean_map": {
+      "path": "control-maps/clean/S001-spatial-clean.png",
+      "sha256": "REPLACE_WITH_64_HEX_SHA256"
+    }
+  },
+  "structural_scope_only": true
+}

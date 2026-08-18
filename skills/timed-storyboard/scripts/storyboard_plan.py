@@ -7,6 +7,7 @@ import argparse
 import csv
 import hashlib
 import json
+import math
 import shutil
 import sys
 from pathlib import Path
@@ -117,10 +118,10 @@ def validate_path(
         if not isinstance(frame, int):
             errors.append(f"{point_label}: frame must be an integer")
         else:
-            if frame < shot_start or frame > shot_end:
+            if frame < shot_start or frame >= shot_end:
                 errors.append(
                     f"{point_label}: frame {frame} falls outside shot "
-                    f"[{shot_start}, {shot_end}]"
+                    f"[{shot_start}, {shot_end})"
                 )
             if prior_frame is not None and frame < prior_frame:
                 errors.append(f"{point_label}: waypoint frames must be ordered")
@@ -128,8 +129,18 @@ def validate_path(
         for axis, value in (("x", x), ("y", y)):
             if not isinstance(value, (int, float)) or isinstance(value, bool):
                 errors.append(f"{point_label}: {axis} must be numeric")
+            elif not math.isfinite(value):
+                errors.append(f"{point_label}: {axis} must be finite")
             elif value < 0 or value > 1:
                 errors.append(f"{point_label}: {axis} must be between 0 and 1")
+        depth = point.get("depth")
+        if depth is not None:
+            if not isinstance(depth, (int, float)) or isinstance(depth, bool):
+                errors.append(f"{point_label}: depth must be numeric")
+            elif not math.isfinite(depth):
+                errors.append(f"{point_label}: depth must be finite")
+            elif depth < 0 or depth > 1:
+                errors.append(f"{point_label}: depth must be between 0 and 1")
 
 
 def validate_phases(
@@ -471,6 +482,7 @@ def export_motion_paths(plan: dict[str, Any], output: Path) -> None:
         "time_sec",
         "x",
         "y",
+        "depth",
         "label",
     ]
     rows: list[dict[str, Any]] = []
@@ -488,6 +500,7 @@ def export_motion_paths(plan: dict[str, Any], output: Path) -> None:
                     "time_sec": frame_seconds(frame, fps),
                     "x": point.get("x", ""),
                     "y": point.get("y", ""),
+                    "depth": point.get("depth", ""),
                     "label": point.get("label", ""),
                 }
             )

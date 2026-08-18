@@ -18,6 +18,13 @@
       S001.png
     clean/
       S001.png
+  control-maps/
+    review/
+      S001-spatial-review.png
+    clean/
+      S001-spatial-clean.png
+    packets/
+      S001-spatial-control.json
   prompts/
     S001.txt
   references/
@@ -124,6 +131,18 @@ Create only folders that receive files. Preserve versioned outputs; do not overw
 - Keep clean and annotated files separate when Level 4 is used.
 - Put shot timing, action phases, and the legend outside the artwork area when possible.
 - Record generation prompt and approved source lineage for any generated image.
+
+## Production-control map files
+
+- Create them only for shots whose staging, eyelines, crossings, occlusion, or depth order cannot be carried reliably by the storyboard panel and structured prompt alone.
+- Derive coordinates from `storyboard_plan.json`; do not independently redraw blocking and create a second source of truth.
+- The review map may contain IDs, arrows, gaze lines, frame numbers, and a color legend outside the image area.
+- The clean map contains only the declared neutral background and unique entity colors, with fully opaque or fully transparent pixels. It must not contain words, labels, arrows, panel borders, faces, wardrobe, texture, light, or style; human review still checks misuse of an otherwise allowed color.
+- Record source plan path/hash, shot ID, coordinate convention, entity-to-color key, paths, depth, occlusion order, and every assumption in `S001-spatial-control.json`.
+- Start from `assets/spatial-control-packet.template.json`; replace every placeholder and keep `structural_scope_only: true`.
+- Conform to `references/spatial-control-packet.schema.json`, then run `scripts/validate_spatial_control.py` against the project root before review or model handoff.
+- A map inferred from a reference frame is a draft until the user approves the positions. Never describe inferred depth as measured geometry.
+- Keep the clean map subordinate to separately approved identity, state, location, material/light, and boundary evidence.
 
 ## Approval states
 

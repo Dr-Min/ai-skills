@@ -1,118 +1,150 @@
-# 01 — Pipeline, workspace & asset naming
+# 01 — Pipeline, project records, and naming
 
-Covers: the core handoffs in detail, why work happens in Claude Cowork, the file
-types you'll meet, the one-handoff shot-record workflow, and the `@type_project_name`
-naming contract.
+Use file-backed records as authority. Chat memory may recall context but never selects
+the current approved artifact.
 
-## The handoffs, in detail
+## Contents
 
-Each receiving stage must get something more useful than an idea:
+- [Canonical handoffs](#canonical-handoffs)
+- [Start a project](#start-a-project)
+- [Modes](#modes)
+- [Record naming](#record-naming)
+- [Status and exclusion](#status-and-exclusion)
 
-| Handoff | What crosses it | Why the next stage needs it |
-| --- | --- | --- |
-| **Brief → Setup** | An agreed brief shaped with Claude: the shot, world, cast, props, constraints | Setup can create the right homes instead of guessing. |
-| **Setup → Generation** | A project, useful folders, one naming contract | Every candidate has an address; approved work becomes a reusable `@loc_`, `@char_`, `@prop_` Element instead of an orphaned file. |
-| **Generation → Seedance** | Proofed, named location, character, and prop Elements | Seedance combines the actual source pixels. A defect here is multiplied in motion. |
-| **Seedance → Review** | A motion test **and a diagnosis** | Review can approve, or send one specific source back for correction. |
-| **Review → Post** | Approved takes, saved prompt versions, and continuity notes | The edit can assemble, clean, color, and mix without guessing provenance. |
+## Canonical handoffs
 
-**Setup defines the address; generation earns it.** A file does not become production
-input merely because it exists. First inspect it, then approve it, name it, save it as
-an Element.
-
-## Why Claude Cowork, not a plain chat
-
-Almost everything starts as a conversation with Claude — but not a throwaway chat.
-Work in **Cowork mode** (the Chat/Cowork selector in the message box on the Home tab),
-because a project needs a memory and a place for its files.
-
-- **Memory across chats** — inside a Cowork project, context carries over: the story,
-  the characters, the look you've agreed on. You stop re-explaining the project every
-  morning. **Turn Memory on in settings before you start a real project** and turn on
-  *Generate memory from chat history* — the whole value of Cowork only works when
-  memory is enabled.
-- **Local files** — assets live in the project folder on your machine, where Claude
-  can read and reuse them. This requires the **desktop app** (Cowork is also on web and
-  mobile in beta, but local file access is desktop-only).
-
-Approved assets get saved in **two places**: the local Claude folder for the project,
-and your normal project folder where you keep every related file. Asset names start
-with `@` — that's the hook that pulls them straight into a prompt later.
-
-## The three file types
-
-- **`.md`** — plain-text Markdown. Used for notes, instructions, and skills.
-- **Skill** — a folder of `.md` instructions (a `SKILL.md`) holding the rules for one
-  topic; Claude opens it when a task fits and works to that standard. A skill isn't
-  magic — it's a pre-written handbook that keeps Claude on one standard instead of
-  improvising. Not every `.md` is a skill; sometimes it's just a system prompt.
-- **`.jsx`** — technically a code file, used here as a **shotlist**: a structured
-  container for shot data (shot numbers, descriptions, timings, prompts) whose fields
-  Claude reads and pulls from.
-
-## The one-handoff workflow (project files → one shot record → Cinema Studio)
-
-Don't ask Claude to "make the prompt" in isolation. Give it the production record
-first: the **scene brief `.md`** (story beat, approved references, exact `@` Element
-names, identity), the **relevant `SKILL.md`** (rules for this kind of prompt), and the
-**current `.jsx` shotlist** (shot number, timing, continuity). Tell Claude which files
-are authoritative — memory helps it recall the project but does not choose the latest
-brief for you.
-
-Example request (replace the bracketed values with the real shot):
-
-```
-Use the scene brief, approved reference images, relevant SKILL.md, and current
-.jsx shotlist in this Cowork project.
-
-Prepare shot [number] only. Preserve the story beat, continuity, and approved Element
-names. If a missing decision would change the shot, ask before writing. Do not invent
-an Element.
-
-Return one record with exactly this structure and no preamble:
-{
-  shot: "[number]",
-  description: "[one-sentence action and framing]",
-  duration: "[seconds]",
-  elements: ["[@name]", "[@name]"],
-  prompt: "[one complete, standalone Cinema Studio prompt]"
-}
+```text
+STORY → STORYBOARD → LOOKDEV → ASSETS → SHOT STILL
+→ RAW VIDEO → SOURCE LIBRARY → EDIT → DELIVERY
 ```
 
-Then: review the record in Claude, save it into the `.jsx` shotlist. Cinema Studio
-does **not** ingest that whole file — open the right project and folder, paste the
-`prompt` value into the Prompt Box, and select every `elements` entry through the `@`
-picker. For a video shot, carry over `duration`. Before generating, the visible `@`
-tags should match the record exactly.
+Every handoff requires an artifact ID, current hash, provenance, and approval. Run the
+workflow for the earliest missing gate and stop after producing one reviewable result.
 
-## Project structure
+## Start a project
 
-Three moves take an empty workspace to a first shot: **create and name a project**
-(its workspace opens), **add a folder** (name and confirm), **generate**. For a real
-production, spin up one project named for your scene holding three folders:
-`locations`, `characters`, `props`.
+Use `scripts/init_project.ps1` with an explicit absolute target. It creates the project
+from `templates/` without overwriting existing files by default. Then run
+`scripts/validate_project.py`.
 
-## The asset naming contract
+Keep skill instructions outside the film project. A project contains only its own
+records and artifacts:
 
-An approved asset only pays off if you can retrieve it. Uploading a file from the
-Cowork project folder creates a reusable **Element** on Higgsfield — the local file and
-the Element are different; a later prompt calls the Element by its saved `@` name.
+```text
+<project>/
+├─ project.json
+├─ 00_schemas/schema-manifest.json
+├─ 01_story/
+│  ├─ STORY_CONTRACT.md
+│  └─ history/story-contract/vNNN/{STORY_CONTRACT.md,evidence/...}
+├─ 02_storyboard/
+│  ├─ storyboard.json
+│  ├─ panels/<panel-id>.png
+│  └─ history/<storyboard-id>/vNNN/{storyboard.json,evidence/...}
+├─ 03_lookdev/
+│  ├─ VISUAL_BIBLE.md
+│  └─ history/visual-bible/vNNN/{VISUAL_BIBLE.md,evidence/...}
+├─ 04_assets/
+│  ├─ asset-index.json
+│  └─ records/<asset-id>/asset.json
+├─ 05_shots/<shot-id>/
+│  ├─ shot.json
+│  ├─ prompts/
+│  ├─ stills/
+│  ├─ history/vNNN/{shot.json,evidence/...}
+│  ├─ takes/<take-id>/take.json
+│  └─ review/
+├─ 06_source_library/
+│  ├─ source_manifest.json
+│  └─ history/<library-id>/vNNN/{source_manifest.json,evidence/...}
+├─ 07_edit/
+│  ├─ timeline.json
+│  └─ records/<timeline-id>/v###/timeline.json
+├─ 08_delivery/
+│  ├─ delivery.json
+│  └─ records/<delivery-id>/v###/delivery.json
+├─ 09_approvals/
+└─ 99_logs/
+```
 
-Pattern: **`@type_project_name`** — three type prefixes, one shared project tag, then a
-descriptive name.
+Use project-relative paths in records. Store SHA-256 hashes so OneDrive, Korean text,
+and moved project roots do not break artifact identity.
 
-| Prefix | Names | Example |
-| --- | --- | --- |
-| `@loc_` | Locations | `@loc_HG_museum_front` |
-| `@char_` | Characters | `@char_HG_jaxx` |
-| `@prop_` | Props | `@prop_HG_phone` |
+## Modes
 
-- The middle tag is the **project prefix** (e.g. `HG` for Hell's Grind). Agree on a
-  short team code at kickoff so names stay collision-free across films.
-- Join multiword descriptions with **underscores** (`museum_front`), never spaces or
-  hyphens.
-- Cinema Studio adds the leading `@` when the Element is created; use the full address
-  to refer to or select it later.
+- `GUIDED`: make decisions with the user and persist them to the same records.
+- `JSON`: validate and execute existing decisions; stop on a missing material choice.
+- `RAW_SOURCE_FIRST`: approve the source library before editing.
+- `ASSEMBLY_WHILE_GENERATING`: assemble approved sources and request missing coverage.
+- `CONCEPT_EXPLORATION`: explore quickly without silently promoting outputs.
 
-Skip the standard and Claude can reference the wrong asset while you hunt through the
-picker. The type and project segments are what make retrieval reliable.
+## Record naming
+
+Use stable IDs independent of filenames:
+
+```text
+project: take-me
+scene: S01
+shot: S01_SH020
+asset: char_take-me_woman_seated_v03
+take: S01_SH020_T03
+coverage: COV_S01_SH020_MASTER
+approval: APR_S01_SH020_T03_001
+```
+
+Keep exact remote Higgsfield tags separately:
+
+```text
+@char_take-me_woman_seated_v03
+@loc_take-me_moon_terrace_night_v02
+@prop_take-me_letter_open_v01
+```
+
+Never invent an `@` tag. A planned name is not a remote Element.
+
+## Status and exclusion
+
+Use schema-defined decision statuses in central approval records. Asset/take records
+contain no lifecycle mirror; collection and source selection resolve central approvals
+and source-manifest membership. A rejected or replaced file remains useful as evidence;
+its central decision is `REJECTED`, `SUPERSEDED`, or
+`EXCLUDED_FROM_INPUTS`, and downstream validators must refuse it.
+
+Approvals bind to hashes. All nine production subject content records omit top-level
+`review_status` and `approval_id`; if their bytes change, obtain a new central approval.
+Do not copy an old `USER_APPROVED` decision onto a changed artifact.
+
+All approval records live in `09_approvals/`; stage directories contain artifacts and
+review evidence, never competing approval authorities. A picture-locked timeline and
+a rendered delivery are separate immutable authorities.
+
+Story, storyboard, lookdev, shot, and source library retain fixed current paths. Before review, copy the
+exact authority to its next `history/<subject-id>/vNNN/` destination and mirror every
+other file-backed evidence item below
+`history/<subject-id>/vNNN/evidence/<original-project-relative-path>`. Approval evidence
+must include equal-hash current/archive pairs. Follow
+`references/12-invalidation-and-revisions.md` before replacing a fixed current file.
+Shot snapshots use `05_shots/<shot-id>/history/vNNN/`; source snapshots use
+`06_source_library/history/<library-id>/vNNN/`. Timeline and delivery instead preserve
+each review candidate at its own record path from central `USER_REVIEW_REQUIRED` onward;
+do not create redundant history snapshots for them. A rejected v001 remains in place
+and the next candidate uses v002 with a terminal predecessor link.
+
+Asset and Take approvals target immutable master/output media. Their `asset.json` and
+`take.json` are mandatory hashed evidence and become immutable with that media when the
+central approval enters `USER_REVIEW_REQUIRED`. A changed candidate gets a new
+`asset_id` or `take_id`; never patch lifecycle or source-selection state into reviewed
+evidence. Take source selection exists only in the approved `SOURCE_LOCKED` manifest.
+
+`templates/TEMPLATE_MAP.json` declares this through `review_snapshot_root`,
+`versioned_review_destination`, `versioned_review_evidence_destination`,
+`snapshot_before_approval_status`, and `review_version_format`. Project initialization seeds only current starter files; the
+stage workflow allocates and copies each review version when real bytes exist.
+The Asset/Take entries separately declare `central_subject_type`, `subject_authority`,
+`evidence_record_immutable_after_approval_status`, `first_review_only`, and the new-ID
+replacement rule.
+
+Close collection gates against the current approved project-wide storyboard: every
+`asset_plan` item needs an approved asset, every `shot_plan` item needs an approved
+shot, and every coverage minimum needs enough centrally approved takes. Resolve extra
+candidate records with terminal central decisions; never hide them from folder scans.

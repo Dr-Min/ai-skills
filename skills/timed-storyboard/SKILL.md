@@ -1,6 +1,6 @@
 ---
 name: timed-storyboard
-description: Turn a story, treatment, script, or rough scene idea into a time-coded cinematic storyboard with shot-by-shot blocking, action phases, actor and prop movement paths, gaze direction, camera paths, continuity rules, storyboard images at four selectable roughness levels, and JSON/CSV/README exports. Use when planning visual narrative timing, mapping how actions change within a shot, drawing arrows and ghost positions, preparing rough boards or concept stills, or handing a storyboard to an AI video workflow. This skill is independent of music, beat detection, CapCut, and automatic rhythm editing.
+description: Turn a story, treatment, script, or rough scene idea into a time-coded cinematic storyboard with shot-by-shot blocking, action phases, actor and prop movement paths, gaze direction, camera paths, depth order, continuity rules, storyboard images at four selectable roughness levels, clean production-control maps, and JSON/CSV/README exports. Use when planning visual narrative timing, mapping how actions change within a shot, drawing arrows and ghost positions, preparing rough boards or concept stills, controlling multi-character staging for AI video, or handing a storyboard to an AI video workflow. This skill is independent of music, beat detection, CapCut, and automatic rhythm editing.
 ---
 
 # Timed Storyboard
@@ -25,7 +25,7 @@ Design the story first, then make every visible action, path, and camera change 
 4. Ask for rough scene ranges, required moments, prohibited elements, character references, and continuity constraints only when missing.
 5. Ask whether timing should be user-locked or AI-proposed. Default to AI-proposed timing with an approval gate.
 
-Read `references/roughness-levels.md` before generating storyboard images. Read `references/motion-notation.md` before designing blocking or annotations. Read `references/output-contract.md` before creating a project package or JSON.
+Read `references/roughness-levels.md` before generating storyboard images. Read `references/motion-notation.md` before designing blocking or annotations. Read `references/production-control-maps.md` when a generation model needs exact multi-subject staging, eyelines, occlusion, or depth order. Read `references/output-contract.md` before creating a project package or JSON.
 
 ## Workflow
 
@@ -54,6 +54,7 @@ For every character, prop, camera, and important environmental element, specify:
 - start, intermediate, and end state;
 - screen position as normalized `x, y` coordinates from 0 to 1;
 - path waypoints and the frame at which each is reached;
+- normalized depth order when foreground/midground/background placement matters;
 - body orientation, head direction, gaze target, and screen direction;
 - entry, exit, stop, contact, occlusion, and handoff events;
 - speed character such as still, hesitant, accelerating, steady, or abrupt.
@@ -80,6 +81,14 @@ Wait for approval when a proposed default changes story meaning, character behav
 - For Level 4, preserve a clean concept still and create a separate annotated motion card; never draw production arrows over the only clean reference.
 - Generate start/middle/end panels when one panel cannot communicate the action unambiguously.
 
+When exact staging is needed downstream, also export a separate production-control packet from the approved coordinates. Keep a labeled review map for humans and a clean color-keyed map using only the declared background/entity palette, without text, panel borders, arrows, or style cues for model input. This packet controls geometry only; it never replaces identity, wardrobe, location, material/light, or boundary-frame evidence.
+
+Validate every packet and its exact source/map hashes before handoff:
+
+```powershell
+python scripts/validate_spatial_control.py --project-root <project-dir> --packet <project-dir>/control-maps/packets/S001-spatial-control.json
+```
+
 ### 6. Review visual evidence
 
 Inspect the actual output at its intended crop. Verify that the arrows, ghost positions, screen direction, contacts, entries/exits, and camera move are visually readable. Revise one decision at a time.
@@ -103,6 +112,9 @@ The exported project README must embed the four-level comparison image. Treat `s
 - Every changing action has ordered phases and a readable start/end state.
 - Every moving subject and camera has a path or an explicit stationary declaration.
 - Gaze, prop, and camera motion are not conflated with actor travel.
+- Depth order and occlusion are explicit when more than one subject shares the frame.
+- Any model-facing control map is clean, palette-checked, hash-bound to its approved source plan, and structurally scoped.
+- Every production-control packet passes its schema and file/hash validator with no placeholders.
 - Entry, exit, contact, occlusion, and screen-direction continuity are resolved.
 - Storyboard images match the selected roughness level.
 - JSON validates and README, detailed timing summary, shot list, action timeline, motion-path table, and image assets are present.

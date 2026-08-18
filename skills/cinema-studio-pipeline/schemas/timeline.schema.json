@@ -1,0 +1,202 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cinema-studio-pipeline.local/schemas/v2/timeline.schema.json",
+  "$comment": "MANDATORY: review state and approval identity live only in the central approval record. PICTURE_LOCKED describes the exact review-candidate edit and must be set before hashing; it is not approval by itself. When a central TIMELINE approval with status USER_REVIEW_REQUIRED or USER_APPROVED targets these exact bytes, validate unique IDs/order, ranges, source membership/hashes, events, the current project pointer, and immutable revision lineage. Version 1 may use 07_edit/timeline.json; later versions use unique versioned paths and bind the immediately preceding immutable timeline through supersedes_timeline. The predecessor central approval must be terminal USER_APPROVED or REJECTED and reciprocally linked to the successor without changing that terminal decision. A path is immutable from USER_REVIEW_REQUIRED onward, including rejected candidates.",
+  "title": "Cinema Studio Timeline Authority Record",
+  "description": "Frame-addressed edit content for approved sources, story beats, and music transients; central approval makes its declared picture lock effective.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_id",
+    "schema_version",
+    "project_id",
+    "timeline_id",
+    "version",
+    "supersedes_timeline",
+    "timebase",
+    "tracks",
+    "clips",
+    "events",
+    "lock_status"
+  ],
+  "properties": {
+    "$schema": { "type": "string", "pattern": "^(?:\\.\\./)*(?:00_schemas|schemas)/timeline\\.schema\\.json$" },
+    "schema_id": { "const": "cinema-studio-pipeline/timeline@2.0.0" },
+    "schema_version": { "const": "2.0.0" },
+    "project_id": { "$ref": "#/$defs/projectId" },
+    "timeline_id": { "$ref": "#/$defs/timelineId" },
+    "version": { "type": "integer", "minimum": 1 },
+    "supersedes_timeline": {
+      "oneOf": [{ "$ref": "#/$defs/timelinePredecessor" }, { "type": "null" }]
+    },
+    "timebase": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["frame_rate_numerator", "frame_rate_denominator", "drop_frame", "audio_sample_rate_hz"],
+      "properties": {
+        "frame_rate_numerator": { "type": "integer", "minimum": 1 },
+        "frame_rate_denominator": { "type": "integer", "minimum": 1 },
+        "drop_frame": { "type": "boolean" },
+        "audio_sample_rate_hz": { "type": "integer", "minimum": 8000 }
+      }
+    },
+    "tracks": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["track_id", "type", "name", "order", "locked"],
+        "properties": {
+          "track_id": { "$ref": "#/$defs/trackId" },
+          "type": { "enum": ["VIDEO", "AUDIO", "MUSIC", "SFX", "VOICEOVER", "GRAPHICS"] },
+          "name": { "type": "string", "minLength": 1 },
+          "order": { "type": "integer", "minimum": 1 },
+          "locked": { "type": "boolean" }
+        }
+      }
+    },
+    "clips": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "clip_id",
+          "track_id",
+          "source_type",
+          "source_id",
+          "source_file",
+          "source_in_frame",
+          "source_out_frame",
+          "timeline_in_frame",
+          "timeline_out_frame",
+          "speed",
+          "review_status"
+        ],
+        "properties": {
+          "clip_id": { "type": "string", "pattern": "^CLIP_[A-Z0-9_]+$" },
+          "track_id": { "$ref": "#/$defs/trackId" },
+          "source_type": { "enum": ["TAKE", "AUDIO", "IMAGE", "TITLE", "ADJUSTMENT"] },
+          "source_id": { "type": "string", "minLength": 1 },
+          "source_file": { "$ref": "#/$defs/relativePath" },
+          "source_sha256": { "type": ["string", "null"], "pattern": "^[a-f0-9]{64}$" },
+          "source_in_frame": { "type": "integer", "minimum": 0 },
+          "source_out_frame": { "type": "integer", "minimum": 1 },
+          "timeline_in_frame": { "type": "integer", "minimum": 0 },
+          "timeline_out_frame": { "type": "integer", "minimum": 1 },
+          "speed": { "type": "number", "exclusiveMinimum": 0 },
+          "linked_event_ids": {
+            "type": "array",
+            "items": { "$ref": "#/$defs/eventId" },
+            "uniqueItems": true
+          },
+          "review_status": { "$ref": "#/$defs/reviewStatus" }
+        }
+      }
+    },
+    "events": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["event_id", "frame", "event_type", "source", "confidence", "hard_lock", "label"],
+        "properties": {
+          "event_id": { "$ref": "#/$defs/eventId" },
+          "frame": { "type": "integer", "minimum": 0 },
+          "time_seconds_hint": { "type": "number", "minimum": 0 },
+          "event_type": {
+            "enum": ["CUT", "TRANSITION_START", "TRANSITION_END", "MUSIC_TRANSIENT", "DIALOGUE_MARKER", "STORY_BEAT", "SPEED_CHANGE"]
+          },
+          "source": { "enum": ["MANUAL", "SYNC_CUTS_TO_MUSIC", "TIMED_STORYBOARD", "IMPORT"] },
+          "confidence": { "type": "number", "minimum": 0, "maximum": 1 },
+          "hard_lock": { "type": "boolean" },
+          "label": { "type": "string", "minLength": 1 },
+          "source_event_id": { "type": ["string", "null"] },
+          "notes": { "type": "string" }
+        }
+      }
+    },
+    "lock_status": {
+      "enum": ["UNLOCKED", "PICTURE_LOCKED"]
+    },
+    "notes": { "type": "string" }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "version": { "const": 1 } },
+        "required": ["version"]
+      },
+      "then": {
+        "properties": { "supersedes_timeline": { "type": "null" } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "version": { "minimum": 2 } },
+        "required": ["version"]
+      },
+      "then": {
+        "properties": { "supersedes_timeline": { "$ref": "#/$defs/timelinePredecessor" } }
+      }
+    },
+    {
+      "if": {
+        "properties": { "lock_status": { "const": "PICTURE_LOCKED" } },
+        "required": ["lock_status"]
+      },
+      "then": {
+        "properties": {
+          "clips": {
+            "minItems": 1,
+            "items": {
+              "properties": {
+                "source_sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+                "review_status": { "const": "USER_APPROVED" }
+              },
+              "required": ["source_sha256"]
+            }
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "projectId": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "timelineId": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:_[a-z0-9]+)*$" },
+    "approvalId": { "type": "string", "pattern": "^APR_[A-Z0-9_]+_[0-9]{3,4}$" },
+    "trackId": { "type": "string", "pattern": "^TRK_[A-Z0-9_]+$" },
+    "eventId": { "type": "string", "pattern": "^EVT_[A-Z0-9_]+$" },
+    "reviewStatus": {
+      "enum": ["DRAFT", "INTERNAL_REVIEW", "USER_REVIEW_REQUIRED", "USER_APPROVED", "REJECTED", "SUPERSEDED", "EXCLUDED_FROM_INPUTS", "LEGACY_UNVERIFIED"]
+    },
+    "timelinePredecessor": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["timeline_id", "version", "path", "sha256", "approval_id"],
+      "properties": {
+        "timeline_id": { "$ref": "#/$defs/timelineId" },
+        "version": { "type": "integer", "minimum": 1 },
+        "path": {
+          "allOf": [
+            { "$ref": "#/$defs/relativePath" },
+            {
+              "type": "string",
+              "pattern": "^07_edit/(?:timeline\\.json|records/[a-z][a-z0-9]*(?:_[a-z0-9]+)*/v[0-9]{3,}/timeline\\.json)$"
+            }
+          ]
+        },
+        "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "approval_id": { "$ref": "#/$defs/approvalId" }
+      }
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!.*(?:^|[\\\\/])\\.\\.(?:[\\\\/]|$))(?![A-Za-z]:)(?![\\\\/]).+$"
+    }
+  }
+}

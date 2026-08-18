@@ -1,3 +1,8 @@
+# EDUCATIONAL CAPSTONE — NOT A V2 PRODUCTION WORKFLOW
+
+Use this file only for the Academy exercise. Run real projects through the v2 gate
+workflows and JSON records linked from `SKILL.md`.
+
 # 07 — The capstone: a full scene, end to end
 
 The capstone runs the whole chain with the user's own assets: set up the production,
